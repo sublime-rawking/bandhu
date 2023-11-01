@@ -22,10 +22,3 @@ foreach ($device in $adbDevices) {
     adb -s $device shell am start -n com.example.bandhu/com.example.bandhu.MainActivity
 }
 
-
-# $filePath = "build\app\outputs\flutter-apk\app-release.apk"
-# $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-# $newFilePath = "build\app\outputs\flutter-apk\Featherr-$timestamp.apk"
-
-# Rename-Item -Path $filePath -NewName $newFilePath
-# Rename-Item : Cannot rename the specified target, because it represents a path or device name.

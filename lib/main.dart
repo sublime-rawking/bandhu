@@ -1,4 +1,4 @@
-import 'package:bandhu/screens/authscreen/login.dart';
+import 'package:bandhu/screens/navbar/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,12 +11,14 @@ void main() {
       child: MaterialApp(
         title: 'Bandhu',
         theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            elevation: 0,
-          ),
-          primarySwatch: Colors.red,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.white,
+              elevation: 0,
+            ),
+            scaffoldBackgroundColor: Colors.white,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.red)
+                .copyWith(background: Colors.white)),
         home: const Main(),
       ),
     ),
@@ -32,13 +34,19 @@ class Main extends ConsumerStatefulWidget {
 
 class _MainState extends ConsumerState<Main> {
   double loader = 0;
-  @override
-  void initState() {
+  callInitState() async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Map userData = jsonDecode(prefs.getString("userData").toString());
+    // if (prefs.getString("userData") != null) {}
     FlutterNativeSplash.remove();
     setState(() {
       loader = 1.0;
     });
+  }
 
+  @override
+  void initState() {
+    callInitState();
     super.initState();
   }
 
@@ -47,6 +55,6 @@ class _MainState extends ConsumerState<Main> {
     return AnimatedOpacity(
         duration: const Duration(seconds: 1),
         opacity: loader,
-        child: const LoginScreen());
+        child: const Navbar());
   }
 }

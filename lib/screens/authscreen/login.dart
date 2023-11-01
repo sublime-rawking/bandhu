@@ -1,10 +1,14 @@
+import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/screens/authscreen/forgetpassword.dart';
 import 'package:bandhu/screens/authscreen/signup.dart';
+import 'package:bandhu/screens/navbar/navbar.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
+import 'package:bandhu/utils/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -16,13 +20,64 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final isObscuredProvider = StateProvider((ref) => false);
   final TextEditingController phoneNumberController = TextEditingController();
-
+  final TextEditingController passwordController = TextEditingController();
+  final loaderProvider = StateProvider((ref) => false);
   bool validatePhoneNumber() {
     final phoneNumber = phoneNumberController.text;
     return phoneNumber.isEmpty || phoneNumber.length != 10;
   }
 
-  onPressSignIn() {}
+  onPressSignIn() async {
+    // check all fleids have value
+
+    if (validatePhoneNumber()) {
+      Fluttertoast.showToast(
+        msg: "Invalid phone number",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: Colors.white,
+      );
+    }
+    if (passwordController.text.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Password cannot be empty",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: Colors.white,
+      );
+    }
+    try {
+      ref.watch(loaderProvider.notifier).state = true;
+      await Auth().signIn(authData: {
+        "mobileNo": phoneNumberController.text.trim(),
+        "password": passwordController.text.trim()
+      }, ref: ref).then((value) {
+        if (value) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (c) => const Navbar()),
+              (route) => false);
+        } else {
+          ref.watch(loaderProvider.notifier).state = false;
+        }
+      });
+    } catch (e) {
+      ref.watch(loaderProvider.notifier).state = false;
+      write(e.toString());
+      Fluttertoast.showToast(
+        msg: "Something went wrong",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: Colors.white,
+      );
+    }
+  }
 
   // navigate to forget password screen
   onPressForgetPassword() => openSendForgetPassword(context: context);
@@ -35,10 +90,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         (route) => false,
       );
+
   @override
   Widget build(BuildContext context) {
     final isObscured = ref.watch(isObscuredProvider);
     Size size = MediaQuery.of(context).size;
+    if (ref.watch(loaderProvider)) {
+      Future.delayed(
+          const Duration(seconds: 20),
+          () => mounted
+              ? ref.watch(loaderProvider.notifier).state = false
+              : null);
+    }
     return Scaffold(
       backgroundColor: white,
       body: SingleChildScrollView(
@@ -83,6 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
               child: TextField(
+                controller: passwordController,
                 decoration: InputDecoration(
                   hintText: "Enter Your Password",
                   suffixIcon: IconButton(
@@ -120,10 +184,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 backgroundColor: colorPrimary,
                 fixedSize: Size(size.width - 60, 50),
               ),
-              child: Text(
-                "Sign in",
-                style: fontMedium14,
-              ),
+              child: ref.watch(loaderProvider)
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: white,
+                      ),
+                    )
+                  : Text(
+                      "Sign in",
+                      style: fontMedium14,
+                    ),
             ),
             const SizedBox(
               height: 15,
