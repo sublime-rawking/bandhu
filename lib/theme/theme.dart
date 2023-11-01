@@ -10,6 +10,8 @@ Color colorPrimaryDark = const Color(0xFFE9446A);
 Color colorAccent2 = const Color(0xFFdd7e28);
 Color colorAccent = const Color(0xFFED547B);
 Color colorAccentLight = const Color(0xFFbc1e70);
+// Color colorAccentCard = const Color.fromARGB(255, 255, 143, 156);
+Color colorAccentCard = const Color(0xFFFAD6DA);
 
 Color white = const Color(0xFFFFFFFF);
 Color whiteGray = const Color.fromARGB(255, 251, 235, 235);

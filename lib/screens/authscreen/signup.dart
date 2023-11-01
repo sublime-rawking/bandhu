@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/provider/image_provider.dart';
 import 'package:bandhu/screens/authscreen/login.dart';
+import 'package:bandhu/screens/navbar/navbar.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:bandhu/utils/imagebottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -20,11 +23,14 @@ class SignUpScreen extends ConsumerStatefulWidget {
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _selectedImageProvider = StateProvider((ref) => "");
-  final isObscuredProvider = StateProvider((ref) => false);
+  final isObscuredProvider = StateProvider((ref) => true);
+  final isConObscuredProvider = StateProvider((ref) => true);
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController conPasswordController = TextEditingController();
+
   bool validatePhoneNumber() {
     final phoneNumber = phoneNumberController.text;
     if (phoneNumber.isEmpty) {
@@ -82,7 +88,77 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       galleryBtn: onPressGallery,
       deleteBtn: onPressDelete);
 
-  onPressSignUp() {}
+  onPressSignUp() async {
+    // check all  text fields are field
+    if (fullNameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your full name"),
+        ),
+      );
+      return;
+    } else if (emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your email"),
+        ),
+      );
+      return;
+    } else if (phoneNumberController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your phone number"),
+        ),
+      );
+      return;
+    } else if (passwordController.text.isEmpty ||
+        conPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your password properly"),
+        ),
+      );
+      return;
+    }
+
+    if (passwordController.text != conPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Passwords do not match"),
+        ),
+      );
+      return;
+    }
+
+    // get all the fields in Map Object
+    Map<String, String> userData = {
+      "name": fullNameController.text,
+      "email": emailController.text,
+      "mobileNo": phoneNumberController.text,
+      "password": passwordController.text,
+      "image": ref.watch(_selectedImageProvider).toString() != ""
+          ? ref.watch(_selectedImageProvider).toString()
+          : "",
+    };
+    try {
+      await Auth().signUp(userData: userData, ref: ref).then((value) => value
+          ? Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (c) => const Navbar()),
+              (route) => false)
+          : null);
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Something went wrong",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: Colors.white,
+      );
+    }
+  }
+
   onPressSignIn() => Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -94,6 +170,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final isObscured = ref.watch(isObscuredProvider);
+    final isConObscured = ref.watch(isConObscuredProvider);
     Size size = MediaQuery.of(context).size;
 
     final selectedImage = ref.watch(_selectedImageProvider);
@@ -197,6 +274,24 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           ),
                         ),
                         obscureText: isObscured,
+                      ),
+                      const SizedBox(height: 15),
+                      TextField(
+                        controller: conPasswordController,
+                        decoration: InputDecoration(
+                          hintText: "Comfirm Your Password",
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              isConObscured
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () => ref
+                                .watch(isConObscuredProvider.notifier)
+                                .state = !isConObscured,
+                          ),
+                        ),
+                        obscureText: isConObscured,
                       ),
                       const SizedBox(height: 30),
                       ElevatedButton(
