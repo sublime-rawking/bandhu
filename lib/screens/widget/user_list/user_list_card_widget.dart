@@ -1,5 +1,6 @@
 import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/screens/widget/user_list/user_ask_give_screen.dart';
+import 'package:bandhu/screens/widget/user_list/user_profile_pdf_screen.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,9 @@ class UserListCardWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     onPressCard() => Navigator.push(context,
         MaterialPageRoute(builder: (context) => const UserAskGiveScreen()));
+
+    onPressOpenPDF() => Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const PDFScreen(selectedPdf: "")));
     return Padding(
       padding: const EdgeInsets.all(10),
       child: InkWell(
@@ -41,7 +45,7 @@ class UserListCardWidget extends ConsumerWidget {
             ),
             const Spacer(),
             IconButton(
-                onPressed: () {},
+                onPressed: onPressOpenPDF,
                 icon: Icon(
                   Icons.picture_as_pdf_rounded,
                   color: colorPrimary,

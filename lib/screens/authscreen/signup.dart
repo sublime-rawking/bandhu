@@ -132,11 +132,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
     // get all the fields in Map Object
     Map<String, String> userData = {
-      "name": fullNameController.text,
+      "Name": fullNameController.text,
       "email": emailController.text,
-      "mobileNo": phoneNumberController.text,
+      "Mobile": phoneNumberController.text,
       "password": passwordController.text,
-      "image": ref.watch(_selectedImageProvider).toString() != ""
+      "Profile": ref.watch(_selectedImageProvider).toString() != ""
           ? ref.watch(_selectedImageProvider).toString()
           : "",
     };
@@ -198,20 +198,35 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ),
                       // Display the selected image
                       InkWell(
-                        onTap: oncallBottomSheet,
-                        child: selectedImage != ""
-                            ? CircleAvatar(
-                                radius: 60,
-                                backgroundColor: Colors.transparent,
-                                foregroundImage: FileImage(File(selectedImage)),
-                              )
-                            : const CircleAvatar(
-                                radius: 60,
-                                backgroundColor: Colors.transparent,
-                                foregroundImage:
-                                    AssetImage(defaultprofileImage),
-                              ),
-                      ),
+                          onTap: oncallBottomSheet,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(60),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors
+                                      .grey, // Replace with your desired shadow color
+                                  offset: Offset(0,
+                                      2), // Replace with your desired shadow offset
+                                  blurRadius:
+                                      4, // Replace with your desired blur radius
+                                ),
+                              ],
+                            ),
+                            child: selectedImage != ""
+                                ? CircleAvatar(
+                                    radius: 60,
+                                    backgroundColor: Colors.transparent,
+                                    foregroundImage:
+                                        FileImage(File(selectedImage)),
+                                  )
+                                : const CircleAvatar(
+                                    radius: 60,
+                                    backgroundColor: Colors.transparent,
+                                    foregroundImage:
+                                        AssetImage(defaultprofileImage),
+                                  ),
+                          )),
                       const SizedBox(height: 60),
                       TextField(
                         controller: fullNameController,
