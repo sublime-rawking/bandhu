@@ -4,7 +4,6 @@ import 'package:bandhu/screens/authscreen/signup.dart';
 import 'package:bandhu/screens/navbar/navbar.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
-import 'package:bandhu/utils/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +17,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final isObscuredProvider = StateProvider((ref) => false);
+  final isObscuredProvider = StateProvider((ref) => true);
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final loaderProvider = StateProvider((ref) => false);
@@ -50,33 +49,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         textColor: Colors.white,
       );
     }
-    try {
-      ref.watch(loaderProvider.notifier).state = true;
-      await Auth().signIn(authData: {
-        "mobileNo": phoneNumberController.text.trim(),
-        "password": passwordController.text.trim()
-      }, ref: ref).then((value) {
-        if (value) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (c) => const Navbar()),
-              (route) => false);
-        } else {
-          ref.watch(loaderProvider.notifier).state = false;
-        }
-      });
-    } catch (e) {
-      ref.watch(loaderProvider.notifier).state = false;
-      write(e.toString());
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: Colors.white,
-      );
-    }
+
+    ref.watch(loaderProvider.notifier).state = true;
+    await Auth().signIn(authData: {
+      "phone": phoneNumberController.text.trim(),
+      "password": passwordController.text.trim()
+    }, ref: ref).then((value) {
+      if (value) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (c) => const Navbar()),
+            (route) => false);
+      } else {
+        ref.watch(loaderProvider.notifier).state = false;
+      }
+    });
   }
 
   // navigate to forget password screen
@@ -179,7 +166,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               height: 10,
             ),
             ElevatedButton(
-              onPressed: onPressSignIn,
+              onPressed: ref.watch(loaderProvider) ? null : onPressSignIn,
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorPrimary,
                 fixedSize: Size(size.width - 60, 50),

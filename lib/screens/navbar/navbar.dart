@@ -3,6 +3,7 @@ import 'package:bandhu/screens/navbar/home_screen.dart';
 import 'package:bandhu/screens/navbar/profile_pdf_screen.dart';
 import 'package:bandhu/screens/navbar/profile_screen.dart';
 import 'package:bandhu/screens/navbar/userlist_screen.dart';
+import 'package:bandhu/screens/widget/ask_give_popup.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,13 +19,17 @@ class Navbar extends ConsumerStatefulWidget {
 }
 
 class _NavbarState extends ConsumerState<Navbar> {
-  /// Fetches data and shows a dialog.
-
-  /// Initializes the state and fetches data.
   @override
   void initState() {
     super.initState();
   }
+
+  onPressAddBtn() => showDialog(
+      context: context,
+      builder: (builder) => Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: const AskGivePopup()));
 
   @override
   Widget build(
@@ -41,6 +46,17 @@ class _NavbarState extends ConsumerState<Navbar> {
             PdfProfileScreen(),
             ProfileScreen()
           ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: onPressAddBtn,
+        backgroundColor: colorPrimary,
+        tooltip: 'Add',
+        heroTag: "Add",
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/data.dart';
 import 'package:bandhu/model/ask_give_model.dart';
 import 'package:bandhu/screens/widget/home/calendar_card_widget.dart';
@@ -38,6 +38,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  onPressLogOut() async => await Auth().logOut(context: context);
   List<Color> colors = [
     Colors.red.shade700,
     Colors.blue.shade700,
@@ -100,7 +101,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: IconButton(
-                onPressed: () {},
+                onPressed: onPressLogOut,
                 icon: Icon(
                   Icons.logout_outlined,
                   color: colorPrimary,
