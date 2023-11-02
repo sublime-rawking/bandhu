@@ -38,6 +38,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         backgroundColor: colorPrimary,
         textColor: Colors.white,
       );
+      return;
     }
     if (passwordController.text.isEmpty) {
       Fluttertoast.showToast(
@@ -48,6 +49,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         backgroundColor: colorPrimary,
         textColor: Colors.white,
       );
+      return;
     }
 
     ref.watch(loaderProvider.notifier).state = true;
