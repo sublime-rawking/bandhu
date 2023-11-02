@@ -1,4 +1,4 @@
-import 'package:bandhu/screens/navbar/navbar.dart';
+import 'package:bandhu/screens/authscreen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,6 +55,6 @@ class _MainState extends ConsumerState<Main> {
     return AnimatedOpacity(
         duration: const Duration(seconds: 1),
         opacity: loader,
-        child: const Navbar());
+        child: const LoginScreen());
   }
 }
