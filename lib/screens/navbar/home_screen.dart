@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'package:bandhu/api/ask_give_api.dart';
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/data.dart';
+import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/model/ask_give_model.dart';
 import 'package:bandhu/screens/widget/home/calendar_card_widget.dart';
 import 'package:bandhu/screens/widget/home/listview_card_widget.dart';
@@ -21,6 +23,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   DateTime selectedDate = DateTime.now();
   int selectedyear = DateTime.now().year;
+  final listViewDataProvider = FutureProvider((ref) async =>
+      await AskGive().getAskGive(id: ref.watch(userDataProvider).userid));
 
   Future<void> selectDate() async {
     showMonthPicker(
@@ -38,7 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  onPressLogOut() async => await Auth().logOut(context: context);
+  onPressLogOut() async => await Auth().logOut(context: context, ref: ref);
   List<Color> colors = [
     Colors.red.shade700,
     Colors.blue.shade700,
@@ -50,6 +54,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    AsyncValue<List<dynamic>> listViewData = ref.watch(listViewDataProvider);
+
+    refresh() async {
+      listViewData = ref.refresh(listViewDataProvider);
+      return true;
+    }
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -139,11 +150,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             gridCardData[index]["date"].toString())),
                   ),
                 ),
-                ListView.builder(
-                    itemCount: listCardData.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => ListViewCard(
-                          cardData: AskGiveModel.fromMap(listCardData[index]),
+                listViewData.when(
+                    loading: () => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                    error: (err, stack) => Text('Error: $err'),
+                    data: (data) => RefreshIndicator(
+                          onRefresh: refresh,
+                          child: ListView.builder(
+                              itemCount: data.length,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) => ListViewCard(
+                                    cardData: AskGiveModel.fromMap(data[index]),
+                                  )),
                         ))
               ],
             ),

@@ -1,4 +1,4 @@
-import 'package:bandhu/constant/data.dart';
+import 'package:bandhu/api/ask_give_api.dart';
 import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/screens/widget/user_list/user_list_card_widget.dart';
 import 'package:bandhu/theme/fonts.dart';
@@ -14,10 +14,19 @@ class UserListScreen extends ConsumerStatefulWidget {
 
 class _UserListScreenState extends ConsumerState<UserListScreen> {
   final TextEditingController searchController = TextEditingController();
+  final memberListProvider = FutureProvider((ref) async {
+    return await AskGive().getMembers();
+  });
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    var memberlist = ref.watch(memberListProvider);
+    Future refresh() async {
+      memberlist = ref.refresh(memberListProvider);
+      return true;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -47,23 +56,33 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                       suffixIcon: Icon(Icons.search),
                     ),
                   ),
-                  SizedBox(
-                    height: size.height - 200,
-                    child: ListView.builder(
-                      itemCount: personCardData.length,
-                      shrinkWrap: true,
-                      itemBuilder: (_, index) => Column(
-                        children: [
-                          UserListCardWidget(
-                            userData: User.fromMap(personCardData[index]),
+                  memberlist.when(
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    error: (err, stack) => Text('Error: $err'),
+                    data: (data) => SizedBox(
+                      height: size.height - 200,
+                      child: RefreshIndicator(
+                        onRefresh: refresh,
+                        child: ListView.builder(
+                          itemCount: data.length,
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemBuilder: (_, index) => Column(
+                            children: [
+                              UserListCardWidget(
+                                userData: User.fromMap(data[index]),
+                              ),
+                              index != data.length
+                                  ? const Divider()
+                                  : const SizedBox.shrink()
+                            ],
                           ),
-                          index != personCardData.length
-                              ? const Divider()
-                              : const SizedBox.shrink()
-                        ],
+                        ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             )

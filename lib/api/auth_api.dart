@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:bandhu/constant/variables.dart';
-import 'package:bandhu/screens/authscreen/login.dart';
+import 'package:bandhu/main.dart';
+import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:bandhu/utils/log.dart';
 import 'package:dio/dio.dart';
@@ -42,7 +43,7 @@ class Auth {
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: colorPrimary,
-          textColor: Colors.white,
+          textColor: white,
         );
         return false;
       }
@@ -54,7 +55,7 @@ class Auth {
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: colorPrimary,
-        textColor: Colors.white,
+        textColor: white,
       );
     }
   }
@@ -67,6 +68,11 @@ class Auth {
       log(resData.toString());
       log(resData["success"].toString());
       if (resData["success"] == true) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("user", jsonEncode(resData["login"]));
+        ref.watch(userDataProvider.notifier).state =
+            User.fromMap(resData["login"]);
+
         return true;
       } else {
         Fluttertoast.showToast(
@@ -75,7 +81,7 @@ class Auth {
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: colorPrimary,
-          textColor: Colors.white,
+          textColor: white,
         );
         return false;
       }
@@ -87,20 +93,19 @@ class Auth {
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: colorPrimary,
-        textColor: Colors.white,
+        textColor: white,
       );
       return false;
     }
   }
 
-  Future logOut({required BuildContext context}) async {
+  Future logOut({required BuildContext context, required WidgetRef ref}) async {
     try {
       await SharedPreferences.getInstance().then((prefs) {
         prefs.clear();
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (c) => const LoginScreen()),
-            (route) => false);
+        ref.watch(screenIndexProvider.notifier).state = 0;
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (c) => const Main()), (route) => false);
       });
     } catch (ex) {
       write(ex.toString());
@@ -110,7 +115,7 @@ class Auth {
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: colorPrimary,
-        textColor: Colors.white,
+        textColor: white,
       );
     }
   }

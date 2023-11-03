@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class AskGiveModel {
   String ask;
   String give;
@@ -16,8 +14,8 @@ class AskGiveModel {
 
   AskGiveModel.fromMap(Map<String, dynamic> map)
       : ask = map["ask"].toString(),
-        give = map["give"].toString(),
+        give = map["given"].toString(),
         remark = map["remark"].toString(),
-        date = DateFormat('M/d/yyyy').parse(map["date"]),
-        id = map["id"].toInt();
+        date = DateTime.parse(map["date"]),
+        id = int.parse(map["give_ask_id"]);
 }
