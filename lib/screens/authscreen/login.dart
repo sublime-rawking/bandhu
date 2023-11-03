@@ -54,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     ref.watch(loaderProvider.notifier).state = true;
     await Auth().signIn(authData: {
-      "phone": phoneNumberController.text.trim(),
+      "Mobile": phoneNumberController.text.trim(),
       "password": passwordController.text.trim()
     }, ref: ref).then((value) {
       if (value) {
@@ -79,6 +79,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         (route) => false,
       );
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

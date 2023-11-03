@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:bandhu/constant/variables.dart';
+import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/screens/authscreen/login.dart';
+import 'package:bandhu/screens/navbar/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -34,10 +41,16 @@ class Main extends ConsumerStatefulWidget {
 
 class _MainState extends ConsumerState<Main> {
   double loader = 0;
+  final userLoaded = StateProvider<bool>((ref) => false);
   callInitState() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Map userData = jsonDecode(prefs.getString("userData").toString());
-    // if (prefs.getString("userData") != null) {}
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    log(prefs.getString("user").toString());
+    if (prefs.getString("user") != null) {
+      Map<String, dynamic> userData =
+          jsonDecode(prefs.getString("user").toString());
+      ref.watch(userDataProvider.notifier).state = User.fromMap(userData);
+      ref.watch(userLoaded.notifier).state = true;
+    }
     FlutterNativeSplash.remove();
     setState(() {
       loader = 1.0;
@@ -55,6 +68,6 @@ class _MainState extends ConsumerState<Main> {
     return AnimatedOpacity(
         duration: const Duration(seconds: 1),
         opacity: loader,
-        child: const LoginScreen());
+        child: ref.read(userLoaded) ? const Navbar() : const LoginScreen());
   }
 }

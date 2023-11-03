@@ -4,33 +4,30 @@ class User {
   String phone;
   String image;
   String userid;
-  int ask;
-  int give;
+  String? dcp;
 
   User(
       {required this.email,
       required this.name,
       required this.userid,
       required this.image,
-      this.ask = 0,
-      this.give = 0,
+      this.dcp = "",
       required this.phone});
 
   User.fromMap(Map<String, dynamic> map)
       : email = map['email'].toString(),
-        name = map['name'].toString(),
-        phone = map['mobileNo'].toString(),
-        ask = map['ask'] ?? 0,
-        give = map['give'] ?? 0,
-        userid = map['_id'].toString(),
-        image = map['profileImage'].toString();
+        name = map['Name'].toString(),
+        dcp = map['DCP'].toString(),
+        phone = map['Mobile'].toString(),
+        userid = map['user_id'].toString(),
+        image = map['Profile'].toString();
 
   Map<String, dynamic> toMap() {
     return {
       'email': email,
-      'name': name,
-      'mobileNo': phone,
-      'image': image,
+      'Name': name,
+      'Mobile': phone,
+      'Profile': image,
     };
   }
 }

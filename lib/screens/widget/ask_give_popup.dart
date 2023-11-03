@@ -1,3 +1,5 @@
+import 'package:bandhu/api/ask_give_api.dart';
+import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,7 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
     setState(() {});
   }
 
-  onPressSend() {
+  onPressSend() async {
     if (_askController.text.isEmpty ||
         _giveController.text.isEmpty ||
         _remarkController.text.isEmpty) {
@@ -44,7 +46,18 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
       );
       return;
     }
-    Navigator.pop(context);
+    Map<String, dynamic> askGiveData = {
+      "member_id": ref.read(userDataProvider).userid,
+      "date": "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}",
+      "ask": _askController.text,
+      "given": _giveController.text,
+      "remark": _remarkController.text,
+    };
+    await AskGive().addAskGive(askGiveData: askGiveData).then((value) {
+      if (value) {
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override

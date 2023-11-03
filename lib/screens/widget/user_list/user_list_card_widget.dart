@@ -1,3 +1,4 @@
+import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/screens/widget/user_list/user_ask_give_screen.dart';
 import 'package:bandhu/screens/widget/user_list/user_profile_pdf_screen.dart';
@@ -15,8 +16,10 @@ class UserListCardWidget extends ConsumerWidget {
     onPressCard() => Navigator.push(context,
         MaterialPageRoute(builder: (context) => const UserAskGiveScreen()));
 
-    onPressOpenPDF() => Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const PDFScreen(selectedPdf: "")));
+    onPressOpenPDF() => Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const PDFScreen(selectedPdf: "")));
     return Padding(
       padding: const EdgeInsets.all(10),
       child: InkWell(
@@ -26,7 +29,7 @@ class UserListCardWidget extends ConsumerWidget {
             CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.transparent,
-                foregroundImage: NetworkImage(userData.image)),
+                foregroundImage: NetworkImage("$baseUrl/${userData.image}")),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -44,12 +47,15 @@ class UserListCardWidget extends ConsumerWidget {
                   ]),
             ),
             const Spacer(),
-            IconButton(
-                onPressed: onPressOpenPDF,
-                icon: Icon(
-                  Icons.picture_as_pdf_rounded,
-                  color: colorPrimary,
-                ))
+            userData.dcp == ""
+                ? IconButton(
+                    onPressed: onPressOpenPDF,
+                    icon: Icon(
+                      Icons.picture_as_pdf_rounded,
+                      color: colorPrimary,
+                    ),
+                  )
+                : const SizedBox.shrink()
           ],
         ),
       ),
