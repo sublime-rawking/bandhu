@@ -100,7 +100,7 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
                   ref.read(userDataProvider).dcp.isEmpty
                       ? 'Select PDF'
                       : 'Select new PDF',
-                  style: fontSemiBold16.copyWith(color: Colors.black),
+                  style: fontSemiBold16.copyWith(color: Colors.white),
                 ),
               )
             : Row(

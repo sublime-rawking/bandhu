@@ -120,29 +120,26 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   error: (err, stack) =>
                       const Text('Error: Something Went Wrong'),
-                  data: (data) => RefreshIndicator(
-                    onRefresh: refresh,
-                    child: Column(
-                      children: [
-                        WeekSlider(
-                            refresh: () {},
-                            data: data,
-                            selectedWeekProvider: selectedWeekProvider),
-                        GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  childAspectRatio: 1.2 / 1, crossAxisCount: 2),
-                          shrinkWrap: true,
-                          itemCount: data.length,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemBuilder: (context, index) => CalendarCard(
-                              cardColor: colorAccentCard,
-                              count: data[index]["task_count"].toString(),
-                              date: DateTime.parse(
-                                  data[index]["list"][0]["date"].toString())),
-                        ),
-                      ],
-                    ),
+                  data: (data) => Column(
+                    children: [
+                      WeekSlider(
+                          refresh: () {},
+                          data: data,
+                          selectedWeekProvider: selectedWeekProvider),
+                      GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                childAspectRatio: 1.2 / 1, crossAxisCount: 2),
+                        shrinkWrap: true,
+                        itemCount: data.length,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (context, index) => CalendarCard(
+                            cardColor: colorAccentCard,
+                            count: data[index]["task_count"].toString(),
+                            date: DateTime.parse(
+                                data[index]["list"][0]["date"].toString())),
+                      ),
+                    ],
                   ),
                 ),
                 listViewData.when(
