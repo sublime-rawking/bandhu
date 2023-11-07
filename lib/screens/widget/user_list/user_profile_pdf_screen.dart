@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:bandhu/theme/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class PDFScreen extends StatelessWidget {
-  final String selectedPdf;
-  const PDFScreen({super.key, required this.selectedPdf});
+  final String dcpPDF;
+  const PDFScreen({super.key, required this.dcpPDF});
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +21,11 @@ class PDFScreen extends StatelessWidget {
         title: Text('PDF Viewer',
             style: fontSemiBold14.copyWith(color: Colors.black)),
       ),
-      body: selectedPdf.isEmpty
+      body: dcpPDF.isEmpty
           ? SfPdfViewer.network(
               "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
-          : SfPdfViewer.file(
-              File(selectedPdf),
+          : SfPdfViewer.network(
+              dcpPDF,
             ),
     );
   }

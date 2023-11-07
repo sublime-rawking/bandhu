@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/screens/authscreen/login.dart';
@@ -50,6 +51,7 @@ class _MainState extends ConsumerState<Main> {
           jsonDecode(prefs.getString("user").toString());
       ref.watch(userDataProvider.notifier).state = User.fromMap(userData);
       ref.watch(userLoaded.notifier).state = true;
+      Auth().getUserData(ref: ref);
     }
     FlutterNativeSplash.remove();
     setState(() {

@@ -20,6 +20,7 @@ class CalendarCard extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(10),
@@ -31,7 +32,7 @@ class CalendarCard extends ConsumerWidget {
         children: [
           Text(
             formatDate,
-            style: fontMedium16.copyWith(color: Colors.white),
+            style: fontMedium16.copyWith(color: Colors.black),
           ),
           const Spacer(),
           Row(
@@ -40,13 +41,13 @@ class CalendarCard extends ConsumerWidget {
             children: [
               Text(
                 "Total\nAsk and Give",
-                style: fontSemiBold12.copyWith(color: Colors.white),
+                style: fontSemiBold12.copyWith(color: Colors.black),
               ),
               const Spacer(),
               Text(
                 count,
                 style:
-                    fontSemiBold16.copyWith(fontSize: 30, color: Colors.white),
+                    fontSemiBold16.copyWith(fontSize: 30, color: Colors.black),
               ),
             ],
           )

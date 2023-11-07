@@ -2,9 +2,7 @@ import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:pinput/pinput.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void openSendForgetPassword({required BuildContext context}) => showDialog(
@@ -24,11 +22,17 @@ class SendForgetPasswordRequest extends ConsumerStatefulWidget {
 
 class _SendForgetPasswordRequestState
     extends ConsumerState<SendForgetPasswordRequest> {
-  final TextEditingController phoneNumberController = TextEditingController();
-
-  bool validatePhoneNumber() {
-    final phoneNumber = phoneNumberController.text;
-    return phoneNumber.isEmpty || phoneNumber.length != 10;
+  final TextEditingController emailController = TextEditingController();
+  // email validation
+  bool validateEmail() {
+    String email = emailController.text;
+    if (email.isEmpty) {
+      return true;
+    }
+    bool isValid = RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(email);
+    return !isValid;
   }
 
   onPressClose() => Navigator.pop(context);
@@ -62,21 +66,19 @@ class _SendForgetPasswordRequestState
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: TextField(
-                  controller: phoneNumberController,
-                  keyboardType: TextInputType.phone,
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: "Enter Mobile No.",
-                    errorText: validatePhoneNumber() &&
-                            phoneNumberController.text.isNotEmpty
-                        ? 'Invalid phone number'
-                        : null,
+                    hintText: "Enter Email",
+                    errorText:
+                        validateEmail() && emailController.text.isNotEmpty
+                            ? 'Invalid email'
+                            : null,
                   ),
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(10),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
                   onChanged: (value) {
-                    setState(() {});
+                    setState(() {
+                      validateEmail();
+                    });
                   },
                 ),
               ),

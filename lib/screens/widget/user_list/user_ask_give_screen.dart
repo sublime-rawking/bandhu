@@ -1,17 +1,19 @@
-import 'dart:math';
-import 'package:bandhu/constant/data.dart';
+import 'package:bandhu/api/ask_give_api.dart';
 import 'package:bandhu/model/ask_give_model.dart';
+import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/screens/widget/home/calendar_card_widget.dart';
 import 'package:bandhu/screens/widget/home/listview_card_widget.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
+import 'package:bandhu/utils/week_slider_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
 
 class UserAskGiveScreen extends ConsumerStatefulWidget {
-  const UserAskGiveScreen({super.key});
+  final User userdata;
+  const UserAskGiveScreen({super.key, required this.userdata});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -19,8 +21,16 @@ class UserAskGiveScreen extends ConsumerStatefulWidget {
 }
 
 class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
-  DateTime selectedDate = DateTime.now();
-  int selectedyear = DateTime.now().year;
+  final userSelectedWeekProvider = StateProvider((ref) => 1);
+  final userSelectedDateTimeProvider = StateProvider((ref) => DateTime.now());
+  final loader = StateProvider((ref) => true);
+  final userListViewDataProvider = StateProvider(
+    (ref) => [],
+  );
+
+  final gridViewDataProvider = StateProvider(
+    (ref) => [],
+  );
 
   Future<void> selectDate() async {
     showMonthPicker(
@@ -31,24 +41,39 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
       initialDate: DateTime.now(),
     ).then((date) {
       if (date != null) {
-        setState(() {
-          selectedDate = date;
-        });
+        ref.watch(userSelectedDateTimeProvider.notifier).state = date;
+        refresh();
       }
     });
   }
 
-  List<Color> colors = [
-    Colors.red.shade700,
-    Colors.blue.shade700,
-    Colors.green.shade700,
-    Colors.yellow.shade700,
-    Colors.purple.shade700,
-  ];
   onPressBack() => Navigator.pop(context);
+
+  refresh() async {
+    ref.watch(loader.notifier).state = true;
+    ref.watch(userListViewDataProvider.notifier).state = await AskGive().getAskGive(
+        id: widget.userdata.userid,
+        month:
+            "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
+    ref.watch(gridViewDataProvider.notifier).state = await AskGive()
+        .getAskGiveByMonth(
+            week: ref.watch(userSelectedWeekProvider),
+            id: widget.userdata.userid,
+            month:
+                "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
+    ref.watch(loader.notifier).state = false;
+  }
+
+  @override
+  void initState() {
+    Future.delayed(const Duration(seconds: 1), () async => refresh());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    List listCardData = ref.watch(userListViewDataProvider);
+    List gridCardData = ref.watch(gridViewDataProvider);
     double width = MediaQuery.of(context).size.width;
     return DefaultTabController(
       length: 2,
@@ -66,7 +91,7 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                    "${DateFormat('MMM').format(selectedDate)} - ${selectedDate.year}",
+                    "${DateFormat('MMM').format(ref.watch(userSelectedDateTimeProvider))} - ${ref.watch(userSelectedDateTimeProvider).year}",
                     style: fontSemiBold14.copyWith(color: black)),
                 const SizedBox(
                   width: 10,
@@ -114,31 +139,40 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
             ),
             TabBarView(
               children: [
-                GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 1.2 / 1, crossAxisCount: 2),
-                  shrinkWrap: true,
-                  itemCount: gridCardData.length,
-                  itemBuilder: (context, index) => Card(
-                    color: Colors.amber,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    margin: const EdgeInsets.all(20),
-                    child: CalendarCard(
-                        cardColor: colors[Random().nextInt(colors.length)],
-                        count:
-                            gridCardData[index]["askAndGiveCount"].toString(),
-                        date: DateTime.parse(
-                            gridCardData[index]["date"].toString())),
-                  ),
+                Column(
+                  children: [
+                    WeekSlider(
+                        refresh: () => refresh(),
+                        data: gridCardData,
+                        selectedWeekProvider: userSelectedWeekProvider),
+                    ref.watch(loader)
+                        ? const Center(child: CircularProgressIndicator())
+                        : GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    childAspectRatio: 1.2 / 1,
+                                    crossAxisCount: 2),
+                            shrinkWrap: true,
+                            itemCount: gridCardData.length,
+                            itemBuilder: (context, index) => CalendarCard(
+                                cardColor: colorAccentCard,
+                                count: gridCardData[index]["task_count"]
+                                    .toString(),
+                                date: DateTime.parse(gridCardData[index]["list"]
+                                        [0]["date"]
+                                    .toString())),
+                          ),
+                  ],
                 ),
-                ListView.builder(
-                    itemCount: listCardData.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => ListViewCard(
-                          cardData: AskGiveModel.fromMap(listCardData[index]),
-                        ))
+                ref.watch(loader)
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: listCardData.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => ListViewCard(
+                              cardData:
+                                  AskGiveModel.fromMap(listCardData[index]),
+                            ))
               ],
             ),
           ],

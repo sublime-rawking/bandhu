@@ -1,64 +1,47 @@
-import 'dart:math';
-import 'package:bandhu/api/ask_give_api.dart';
 import 'package:bandhu/api/auth_api.dart';
-import 'package:bandhu/constant/data.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/model/ask_give_model.dart';
 import 'package:bandhu/screens/widget/home/calendar_card_widget.dart';
 import 'package:bandhu/screens/widget/home/listview_card_widget.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
+import 'package:bandhu/utils/week_slider_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  DateTime selectedDate = DateTime.now();
-  int selectedyear = DateTime.now().year;
-  final listViewDataProvider = FutureProvider((ref) async =>
-      await AskGive().getAskGive(id: ref.watch(userDataProvider).userid));
-
-  Future<void> selectDate() async {
-    showMonthPicker(
-      selectedMonthBackgroundColor: colorPrimary,
-      unselectedMonthTextColor: black,
-      headerColor: colorPrimaryDark,
-      context: context,
-      initialDate: DateTime.now(),
-    ).then((date) {
-      if (date != null) {
-        setState(() {
-          selectedDate = date;
-        });
-      }
-    });
-  }
-
-  onPressLogOut() async => await Auth().logOut(context: context, ref: ref);
-  List<Color> colors = [
-    Colors.red.shade700,
-    Colors.blue.shade700,
-    Colors.green.shade700,
-    Colors.yellow.shade700,
-    Colors.purple.shade700,
-  ];
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    onPressLogOut() async => await Auth().logOut(context: context, ref: ref);
     double width = MediaQuery.of(context).size.width;
+
     AsyncValue<List<dynamic>> listViewData = ref.watch(listViewDataProvider);
+    AsyncValue<List<dynamic>> gridViewData = ref.watch(gridViewDataProvider);
+    DateTime selectedDate = ref.watch(selectedDateTimeProvider);
 
     refresh() async {
       listViewData = ref.refresh(listViewDataProvider);
+      gridViewData = ref.refresh(gridViewDataProvider);
       return true;
+    }
+
+    Future<void> selectDate() async {
+      showMonthPicker(
+        selectedMonthBackgroundColor: colorPrimary,
+        unselectedMonthTextColor: black,
+        headerColor: colorPrimaryDark,
+        context: context,
+        initialDate: DateTime.now(),
+      ).then((date) {
+        if (date != null) {
+          ref.watch(selectedDateTimeProvider.notifier).state = date;
+          refresh();
+        }
+      });
     }
 
     return DefaultTabController(
@@ -131,40 +114,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             TabBarView(
               children: [
-                GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 1.2 / 1, crossAxisCount: 2),
-                  shrinkWrap: true,
-                  itemCount: gridCardData.length,
-                  itemBuilder: (context, index) => Card(
-                    color: Colors.amber,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                gridViewData.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (err, stack) =>
+                      const Text('Error: Something Went Wrong'),
+                  data: (data) => RefreshIndicator(
+                    onRefresh: refresh,
+                    child: Column(
+                      children: [
+                        WeekSlider(
+                            refresh: () {},
+                            data: data,
+                            selectedWeekProvider: selectedWeekProvider),
+                        GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: 1.2 / 1, crossAxisCount: 2),
+                          shrinkWrap: true,
+                          itemCount: data.length,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemBuilder: (context, index) => CalendarCard(
+                              cardColor: colorAccentCard,
+                              count: data[index]["task_count"].toString(),
+                              date: DateTime.parse(
+                                  data[index]["list"][0]["date"].toString())),
+                        ),
+                      ],
                     ),
-                    margin: const EdgeInsets.all(20),
-                    child: CalendarCard(
-                        cardColor: colors[Random().nextInt(colors.length)],
-                        count:
-                            gridCardData[index]["askAndGiveCount"].toString(),
-                        date: DateTime.parse(
-                            gridCardData[index]["date"].toString())),
                   ),
                 ),
                 listViewData.when(
-                    loading: () => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                    error: (err, stack) => Text('Error: $err'),
-                    data: (data) => RefreshIndicator(
-                          onRefresh: refresh,
-                          child: ListView.builder(
-                              itemCount: data.length,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) => ListViewCard(
-                                    cardData: AskGiveModel.fromMap(data[index]),
-                                  )),
-                        ))
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (err, stack) =>
+                      const Text('Error: Something Went Wrong'),
+                  data: (data) => RefreshIndicator(
+                    onRefresh: refresh,
+                    child: ListView.builder(
+                      itemCount: data.length,
+                      reverse: false,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => ListViewCard(
+                        cardData: AskGiveModel.fromMap(data[index]),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
