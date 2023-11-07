@@ -48,7 +48,8 @@ class _NavbarState extends ConsumerState<Navbar> {
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: onPressAddBtn,
         backgroundColor: colorPrimary,
@@ -95,12 +96,14 @@ class _NavbarState extends ConsumerState<Navbar> {
         showUnselectedLabels: true,
         enableFeedback: true,
         type: BottomNavigationBarType.fixed,
+        landscapeLayout: BottomNavigationBarLandscapeLayout.linear,
         unselectedLabelStyle: TextStyle(
           color: const Color(0xFF5A5A5A),
           fontSize: 12,
           fontFamily: GoogleFonts.poppins().fontFamily,
           fontWeight: FontWeight.w400,
         ),
+        selectedIconTheme: IconThemeData(color: colorPrimary),
         selectedLabelStyle: TextStyle(
           color: const Color(0xFFE63246),
           fontSize: 12,

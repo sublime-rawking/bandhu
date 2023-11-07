@@ -67,7 +67,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                         onRefresh: refresh,
                         child: ListView.builder(
                           itemCount: data.length,
-                          shrinkWrap: true,
+                          shrinkWrap: data.isNotEmpty,
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemBuilder: (_, index) => Column(
                             children: [

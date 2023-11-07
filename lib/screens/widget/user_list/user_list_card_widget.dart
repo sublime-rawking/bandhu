@@ -13,13 +13,20 @@ class UserListCardWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    onPressCard() => Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const UserAskGiveScreen()));
+    onPressCard() => Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => UserAskGiveScreen(
+                  userdata: userData,
+                )));
 
     onPressOpenPDF() => Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const PDFScreen(selectedPdf: "")));
+            builder: (context) => PDFScreen(
+                dcpPDF: userData.dcp != ""
+                    ? '$baseUrl/uploads/dcp/${userData.dcp}'
+                    : "")));
     return Padding(
       padding: const EdgeInsets.all(10),
       child: InkWell(
@@ -47,7 +54,7 @@ class UserListCardWidget extends ConsumerWidget {
                   ]),
             ),
             const Spacer(),
-            userData.dcp == ""
+            userData.dcp != ""
                 ? IconButton(
                     onPressed: onPressOpenPDF,
                     icon: Icon(

@@ -1,4 +1,5 @@
 import 'package:bandhu/api/ask_give_api.dart';
+import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
@@ -26,8 +27,9 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
     var pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      firstDate: DateTime(selectedDate.year, selectedDate.month),
+      lastDate: DateTime(selectedDate.year, selectedDate.month + 1)
+          .subtract(const Duration(days: 1)),
     );
     if (pickedDate != null) {
       selectedDate = pickedDate;
@@ -58,6 +60,11 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
         Navigator.pop(context);
       }
     });
+    Auth().getUserData(ref: ref);
+    // ignore: unused_result
+    ref.refresh(listViewDataProvider);
+    // ignore: unused_result
+    ref.refresh(gridViewDataProvider);
   }
 
   @override
@@ -113,24 +120,39 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
               ),
             ),
             const SizedBox(height: 20),
-            TextField(
-              controller: _askController,
-              decoration: const InputDecoration(
-                labelText: 'Ask',
+            Flexible(
+              child: TextField(
+                controller: _askController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  constraints: BoxConstraints(maxHeight: 100),
+                  labelText: 'Ask',
+                ),
               ),
             ),
             const SizedBox(height: 10),
-            TextField(
-              controller: _giveController,
-              decoration: const InputDecoration(
-                labelText: 'Give',
+            Flexible(
+              child: TextField(
+                controller: _giveController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  constraints: BoxConstraints(maxHeight: 100),
+                  labelText: 'Give',
+                ),
               ),
             ),
             const SizedBox(height: 10),
-            TextField(
-              controller: _remarkController,
-              decoration: const InputDecoration(
-                labelText: 'Remark',
+            Flexible(
+              child: TextField(
+                controller: _remarkController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  constraints: BoxConstraints(maxHeight: 100),
+                  labelText: 'Remark',
+                ),
               ),
             ),
             const SizedBox(height: 20),

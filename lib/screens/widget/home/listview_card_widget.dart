@@ -15,7 +15,6 @@ class ListViewCard extends ConsumerStatefulWidget {
 }
 
 class _ListViewCardState extends ConsumerState<ListViewCard> {
-  List<bool> expandedStates = [false, false, false];
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -29,7 +28,13 @@ class _ListViewCardState extends ConsumerState<ListViewCard> {
             DateFormat("dd-MM-yyyy").format(widget.cardData.date),
             style: fontMedium16.copyWith(color: Colors.black),
           ),
-          theme: const ExpandableThemeData(hasIcon: true),
+          theme: ExpandableThemeData(
+              hasIcon: widget.cardData.ask.length < 52 &&
+                      widget.cardData.give.length < 52 &&
+                      widget.cardData.remark.length < 45
+                  ? false
+                  : true,
+              useInkWell: false),
           collapsed: dateFeild(
               askData: widget.cardData.ask,
               giveData: widget.cardData.give,
