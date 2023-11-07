@@ -16,6 +16,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   onPressLogout() async => await Auth().logOut(context: context, ref: ref);
   // navigate to forget password screen
+
   onPressForgetPassword() => openSendForgetPassword(context: context);
   @override
   Widget build(BuildContext context) {

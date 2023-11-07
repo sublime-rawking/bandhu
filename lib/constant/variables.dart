@@ -1,5 +1,6 @@
 import 'package:bandhu/api/ask_give_api.dart';
 import 'package:bandhu/model/user_model.dart';
+// ignore: unused_import
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,7 +14,6 @@ const defaultprofileImage = "assets/images/default.png";
 final StateProvider<User> userDataProvider = StateProvider<User>(
     (ref) => User(email: "", name: "", userid: "", image: "", phone: ""));
 
-final otpContollerProvider = StateProvider((ref) => TextEditingController());
 final screenIndexProvider = StateProvider((ref) => 0);
 final selectedWeekProvider = StateProvider((ref) => 1);
 final selectedDateTimeProvider = StateProvider((ref) => DateTime.now());

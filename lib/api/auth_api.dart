@@ -167,6 +167,53 @@ class Auth {
     }
   }
 
+  Future forgetPassword({required String email}) async {
+    try {
+      var formData = FormData.fromMap({"email_id": email});
+      var res = await dio.post("$baseUrl/Api/forgot_password", data: formData);
+
+      var databody = jsonDecode(res.data);
+      write(databody.toString());
+      return databody["success"];
+    } catch (e) {
+      write(e.toString());
+      Fluttertoast.showToast(
+        msg: "Something went wrong",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return false;
+    }
+  }
+
+  Future verifyOTP(
+      {required String email,
+      required String otp,
+      required String password}) async {
+    try {
+      var formData =
+          FormData.fromMap({"email": email, "otp": otp, "password": password});
+      var res = await dio.post("$baseUrl/Api/verificationotp", data: formData);
+      var databody = jsonDecode(res.data);
+      write(databody.toString());
+      return databody["success"];
+    } catch (e) {
+      write(e.toString());
+      Fluttertoast.showToast(
+        msg: "Something went wrong",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return false;
+    }
+  }
+
   Future logOut({required BuildContext context, required WidgetRef ref}) async {
     try {
       await SharedPreferences.getInstance().then((prefs) {

@@ -1,7 +1,11 @@
-import 'package:bandhu/constant/variables.dart';
+import 'dart:developer';
+
+import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
+import 'package:bandhu/utils/reset_password_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pinput/pinput.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,6 +27,7 @@ class SendForgetPasswordRequest extends ConsumerStatefulWidget {
 class _SendForgetPasswordRequestState
     extends ConsumerState<SendForgetPasswordRequest> {
   final TextEditingController emailController = TextEditingController();
+  final loader = StateProvider((ref) => false);
   // email validation
   bool validateEmail() {
     String email = emailController.text;
@@ -36,14 +41,53 @@ class _SendForgetPasswordRequestState
   }
 
   onPressClose() => Navigator.pop(context);
-  onPressSend() {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (c) => const ResetPassword(),
-      ),
-    );
+  onPressSend() async {
+    ref.watch(loader.notifier).state = true;
+    if (validateEmail()) {
+      Fluttertoast.showToast(
+        msg: 'Invalid email',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      ref.watch(loader.notifier).state = false;
+      return;
+    }
+
+    await Auth().forgetPassword(email: emailController.text).then((res) {
+      ref.watch(loader.notifier).state = false;
+      if (!res) {
+        Fluttertoast.showToast(
+          msg: "Something went wrong",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: colorPrimary,
+          textColor: white,
+        );
+        return;
+      }
+      Fluttertoast.showToast(
+        msg: "Otp send",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      Navigator.pop(context);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (c) => ResetPassword(
+            email: emailController.text,
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -114,18 +158,94 @@ class _SendForgetPasswordRequestState
 }
 
 class ResetPassword extends ConsumerStatefulWidget {
-  const ResetPassword({super.key});
+  final String email;
+  const ResetPassword({super.key, required this.email});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ResetPasswordState();
 }
 
 class _ResetPasswordState extends ConsumerState<ResetPassword> {
-  final isObscuredProvider = StateProvider((ref) => false);
+  final isObscuredProvider = StateProvider((ref) => true);
+  final isConObscuredProvider = StateProvider((ref) => true);
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController conPasswordController = TextEditingController();
+  final TextEditingController otpContollerProvider = TextEditingController();
 
-  onPressSubmit() {}
+  onPressSubmit() async {
+    if (passwordController.text.isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'Please enter password',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return;
+    }
+    if (conPasswordController.text.isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'Please enter confirm password',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return;
+    }
+    if (passwordController.text != conPasswordController.text) {
+      Fluttertoast.showToast(
+        msg: 'Password does not match',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+    }
+    if (otpContollerProvider.text.isEmpty ||
+        otpContollerProvider.text.length < 6) {
+      Fluttertoast.showToast(
+        msg: 'Please enter otp properly',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return;
+    }
+    await Auth()
+        .verifyOTP(
+            email: widget.email,
+            otp: otpContollerProvider.text,
+            password: passwordController.text)
+        .then((value) {
+      log(value.toString());
+      if (!value) {
+        showDialog(
+            context: context,
+            builder: (_) => const ResetPasswordDialog(
+                  msg: 'Something went wrong',
+                  status: false,
+                ));
+        return;
+      }
+      showDialog(
+          context: context,
+          builder: (_) => const ResetPasswordDialog(
+                msg: 'Password changed successfully',
+                status: true,
+              ));
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      });
+    });
+  }
+
   onPressBack() => Navigator.pop(context);
   FocusNode myFocusNode = FocusNode();
 
@@ -133,17 +253,18 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final isObscured = ref.watch(isObscuredProvider);
+    final isConObscured = ref.watch(isConObscuredProvider);
     final defaultPinTheme = PinTheme(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      width: 60,
-      height: 64,
+      margin: const EdgeInsets.symmetric(horizontal: 5),
+      width: size.width,
+      height: 60,
       textStyle: fontSemiBold20.copyWith(
         color: const Color(0xFF1F1F1F),
       ),
       decoration: BoxDecoration(
         // border: Border.all(color: colorPrimary),
         color: const Color.fromARGB(136, 232, 235, 241),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
       ),
     );
     return GestureDetector(
@@ -182,15 +303,15 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Pinput(
-                            controller: ref.watch(otpContollerProvider),
-                            length: 4,
+                            controller: otpContollerProvider,
+                            length: 6,
                             focusNode: myFocusNode,
                             defaultPinTheme: defaultPinTheme,
                             focusedPinTheme: defaultPinTheme.copyWith(
                               decoration: BoxDecoration(
                                 border: Border.all(
                                     width: 1, color: colorPrimaryDark),
-                                borderRadius: BorderRadius.circular(24),
+                                borderRadius: BorderRadius.circular(20),
                               ),
                             ),
                             // onCompleted: (pin) => print(pin),
@@ -220,16 +341,16 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                             hintText: "Comfirm Your Password",
                             suffixIcon: IconButton(
                               icon: Icon(
-                                isObscured
+                                isConObscured
                                     ? Icons.visibility
                                     : Icons.visibility_off,
                               ),
                               onPressed: () => ref
-                                  .watch(isObscuredProvider.notifier)
-                                  .state = !isObscured,
+                                  .watch(isConObscuredProvider.notifier)
+                                  .state = !isConObscured,
                             ),
                           ),
-                          obscureText: isObscured,
+                          obscureText: isConObscured,
                         ),
                         const SizedBox(height: 30),
                         ElevatedButton(
