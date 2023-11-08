@@ -7,10 +7,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class AskGive {
   final dio = Dio();
-  Future<List> getMembers({int id = 0}) async {
+  Future<List> getMembers({String search = ""}) async {
     try {
-      var res =
-          await dio.get("$baseUrl/Api/getMembers", queryParameters: {"id": id});
+      var res = await dio
+          .get("$baseUrl/Api/getMembers", queryParameters: {"name": search});
 
       var databody = jsonDecode(res.data.toString());
       write(databody.toString());
