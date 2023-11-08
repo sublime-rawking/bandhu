@@ -1,4 +1,5 @@
 import 'package:bandhu/api/ask_give_api.dart';
+import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/screens/widget/user_list/user_list_card_widget.dart';
 import 'package:bandhu/theme/fonts.dart';
@@ -13,11 +14,6 @@ class UserListScreen extends ConsumerStatefulWidget {
 }
 
 class _UserListScreenState extends ConsumerState<UserListScreen> {
-  final TextEditingController searchController = TextEditingController();
-  final memberListProvider = FutureProvider((ref) async {
-    return await AskGive().getMembers();
-  });
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -51,10 +47,18 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                   TextField(
                     controller: searchController,
                     keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "Search",
-                      suffixIcon: Icon(Icons.search),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: refresh,
+                      ),
                     ),
+                    onChanged: (value) async {
+                      if (value.isEmpty) {
+                        await refresh();
+                      }
+                    },
                   ),
                   memberlist.when(
                     loading: () => const Center(

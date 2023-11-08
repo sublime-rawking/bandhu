@@ -17,6 +17,7 @@ final StateProvider<User> userDataProvider = StateProvider<User>(
 final screenIndexProvider = StateProvider((ref) => 0);
 final selectedWeekProvider = StateProvider((ref) => 1);
 final selectedDateTimeProvider = StateProvider((ref) => DateTime.now());
+final TextEditingController searchController = TextEditingController();
 
 final listViewDataProvider = FutureProvider((ref) async => await AskGive()
     .getAskGive(
@@ -30,3 +31,7 @@ final gridViewDataProvider = FutureProvider((ref) async => await AskGive()
         week: ref.watch(selectedWeekProvider),
         month:
             "${ref.read(selectedDateTimeProvider).year}-${ref.read(selectedDateTimeProvider).month}"));
+
+final memberListProvider = FutureProvider((ref) async {
+  return await AskGive().getMembers(search: searchController.text);
+});
