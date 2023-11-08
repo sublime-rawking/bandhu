@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
@@ -45,7 +44,6 @@ class _MainState extends ConsumerState<Main> {
   final userLoaded = StateProvider<bool>((ref) => false);
   callInitState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    log(prefs.getString("user").toString());
     if (prefs.getString("user") != null) {
       Map<String, dynamic> userData =
           jsonDecode(prefs.getString("user").toString());
