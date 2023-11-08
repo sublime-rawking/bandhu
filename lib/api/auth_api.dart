@@ -68,12 +68,13 @@ class Auth {
       http.Response response =
           await http.Response.fromStream(await request.send());
       var databody = jsonDecode(response.body);
-
+      write(databody.toString());
       if (databody["success"] == true) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("user", jsonEncode(databody["login"]));
+        prefs.setString("user", jsonEncode(databody["data"]));
         ref.watch(userDataProvider.notifier).state =
-            User.fromMap(databody["login"]);
+            User.fromMap(databody["data"]);
+        await getUserData(ref: ref);
         return true;
       } else {
         Fluttertoast.showToast(
@@ -104,7 +105,7 @@ class Auth {
     try {
       var res = await dio.get("$baseUrl/Api/login", queryParameters: authData);
       var databody = jsonDecode(res.data);
-
+      write(databody.toString());
       if (databody["success"] == true) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("user", jsonEncode(databody["login"]));
