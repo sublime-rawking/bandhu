@@ -27,7 +27,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       backgroundColor: white,
       body: RefreshIndicator(
         onRefresh: () async {
-          await Auth().getUserData(ref: ref);
+          await Auth().getUserData(ref: ref, context: context);
         },
         child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),

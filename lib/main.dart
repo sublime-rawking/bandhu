@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:bandhu/api/auth_api.dart';
@@ -49,7 +51,7 @@ class _MainState extends ConsumerState<Main> {
           jsonDecode(prefs.getString("user").toString());
       ref.watch(userDataProvider.notifier).state = User.fromMap(userData);
       ref.watch(userLoaded.notifier).state = true;
-      Auth().getUserData(ref: ref);
+      Auth().getUserData(ref: ref, context: context);
     }
     FlutterNativeSplash.remove();
     setState(() {

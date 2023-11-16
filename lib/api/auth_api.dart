@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/main.dart';
@@ -13,12 +15,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth {
   final dio = Dio();
-  Future getUserData({required WidgetRef ref}) async {
+  Future getUserData(
+      {required WidgetRef ref, required BuildContext context}) async {
     try {
       var response = await dio.get("$baseUrl/Api/getMembersbyID",
           queryParameters: {"id": ref.read(userDataProvider).userid});
       var databody = jsonDecode(response.data);
       write(databody.toString());
+      if (databody["MembersbyID"]["status"].toString() == "2") {
+        logOut(context: context, ref: ref);
+        Fluttertoast.showToast(
+          msg: "User Disabled by Administrator",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: colorPrimary,
+          textColor: white,
+        );
+        return false;
+      }
       if (databody["success"] == true) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("user", jsonEncode(databody["MembersbyID"]));
@@ -50,7 +65,9 @@ class Auth {
   }
 
   Future signUp(
-      {required Map<String, String> userData, required WidgetRef ref}) async {
+      {required Map<String, String> userData,
+      required WidgetRef ref,
+      required BuildContext context}) async {
     try {
       var request = http.MultipartRequest(
         'POST',
@@ -74,11 +91,11 @@ class Auth {
         prefs.setString("user", jsonEncode(databody["data"]));
         ref.watch(userDataProvider.notifier).state =
             User.fromMap(databody["data"]);
-        await getUserData(ref: ref);
+        await getUserData(ref: ref, context: context);
         return true;
       } else {
         Fluttertoast.showToast(
-          msg: databody["status"],
+          msg: databody["message"],
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -101,12 +118,27 @@ class Auth {
   }
 
   Future signIn(
-      {required Map<String, dynamic> authData, required WidgetRef ref}) async {
+      {required Map<String, dynamic> authData,
+      required WidgetRef ref,
+      required BuildContext context}) async {
     try {
       var res = await dio.get("$baseUrl/Api/login", queryParameters: authData);
       var databody = jsonDecode(res.data);
       write(databody.toString());
       if (databody["success"] == true) {
+        if (databody["login"]["status"].toString() == "2") {
+          logOut(context: context, ref: ref);
+          Fluttertoast.showToast(
+            msg: "User Disabled by Administrator",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: colorPrimary,
+            textColor: white,
+          );
+          return false;
+        }
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("user", jsonEncode(databody["login"]));
         ref.watch(userDataProvider.notifier).state =
