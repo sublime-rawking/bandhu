@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:bandhu/api/auth_api.dart';
@@ -39,7 +41,7 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
   uploadPDF() async {
     var res = await Auth().uploadPDF(filePath: selectedPdf, ref: ref);
     if (res) {
-      await Auth().getUserData(ref: ref);
+      await Auth().getUserData(ref: ref, context: context);
       write(ref.read(userDataProvider).toString());
     }
     setState(() => selectedPdf = "");

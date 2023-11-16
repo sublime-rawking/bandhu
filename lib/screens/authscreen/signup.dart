@@ -141,12 +141,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           : "",
     };
     try {
-      await Auth().signUp(userData: userData, ref: ref).then((value) => value
-          ? Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (c) => const Navbar()),
-              (route) => false)
-          : null);
+      await Auth().signUp(userData: userData, ref: ref, context: context).then(
+          (value) => value
+              ? Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (c) => const Navbar()),
+                  (route) => false)
+              : null);
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Something went wrong",

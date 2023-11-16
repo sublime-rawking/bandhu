@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:bandhu/api/ask_give_api.dart';
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
@@ -60,7 +62,7 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
         Navigator.pop(context);
       }
     });
-    Auth().getUserData(ref: ref);
+    Auth().getUserData(ref: ref, context: context);
     // ignore: unused_result
     ref.refresh(listViewDataProvider);
     // ignore: unused_result
@@ -74,99 +76,101 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
       padding: const EdgeInsets.all(20),
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Text(
-                  "Add",
-                  style: fontSemiBold16.copyWith(color: colorPrimary),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: onPressClose,
-                  icon: Icon(Icons.close, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: InkWell(
-                onTap: onPressCalendar,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                        "${selectedDate.day}-${DateFormat('MMM').format(selectedDate)}-${selectedDate.year}",
-                        style: fontMedium14.copyWith(color: black)),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const RotatedBox(
-                      quarterTurns: 3,
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 25,
-                        color: Colors.black,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "Add",
+                    style: fontSemiBold16.copyWith(color: colorPrimary),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: onPressClose,
+                    icon: Icon(Icons.close, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: InkWell(
+                  onTap: onPressCalendar,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                          "${selectedDate.day}-${DateFormat('MMM').format(selectedDate)}-${selectedDate.year}",
+                          style: fontMedium14.copyWith(color: black)),
+                      const SizedBox(
+                        width: 10,
                       ),
-                    ),
-                  ],
+                      const RotatedBox(
+                        quarterTurns: 3,
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 25,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Flexible(
-              child: TextField(
-                controller: _askController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: const InputDecoration(
-                  constraints: BoxConstraints(maxHeight: 100),
-                  labelText: 'Ask',
+              const SizedBox(height: 20),
+              Flexible(
+                child: TextField(
+                  controller: _askController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    constraints: BoxConstraints(maxHeight: 100),
+                    labelText: 'Ask',
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Flexible(
-              child: TextField(
-                controller: _giveController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: const InputDecoration(
-                  constraints: BoxConstraints(maxHeight: 100),
-                  labelText: 'Give',
+              const SizedBox(height: 10),
+              Flexible(
+                child: TextField(
+                  controller: _giveController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    constraints: BoxConstraints(maxHeight: 100),
+                    labelText: 'Give',
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Flexible(
-              child: TextField(
-                controller: _remarkController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: const InputDecoration(
-                  constraints: BoxConstraints(maxHeight: 100),
-                  labelText: 'Remark',
+              const SizedBox(height: 10),
+              Flexible(
+                child: TextField(
+                  controller: _remarkController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    constraints: BoxConstraints(maxHeight: 100),
+                    labelText: 'Remark',
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                fixedSize: Size(width, 50),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                backgroundColor: colorPrimary,
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(width, 50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: colorPrimary,
+                ),
+                onPressed: onPressSend,
+                child: const Text('Send'),
               ),
-              onPressed: onPressSend,
-              child: const Text('Send'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
