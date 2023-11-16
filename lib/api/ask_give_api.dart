@@ -7,6 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class AskGive {
   final dio = Dio();
+
+  /// Get members based on search query.
   Future<List> getMembers({String search = ""}) async {
     try {
       var res = await dio
@@ -24,12 +26,15 @@ class AskGive {
     }
   }
 
+  /// Get AskGive data for a specific month and week.
   Future<List> getAskGiveByMonth(
-      {required String id, required String month, required int week}) async {
+      {required String id, required String month}) async {
     try {
       write("$id $month");
-      var res = await dio.get("$baseUrl/Api/giveaskdata",
-          queryParameters: {"id": id, "date": month, "week": week});
+      var res = await dio.get("$baseUrl/Api/giveaskdata", queryParameters: {
+        "id": id,
+        "date": month,
+      });
 
       var databody = jsonDecode(res.data.toString());
       write(databody.toString());
@@ -43,6 +48,7 @@ class AskGive {
     }
   }
 
+  /// Get AskGive data for a specific id and month.
   Future<List> getAskGive({required String id, required String month}) async {
     try {
       var res = await dio.get("$baseUrl/Api/getGive_ask",
@@ -60,6 +66,7 @@ class AskGive {
     }
   }
 
+  /// Add AskGive data.
   Future<bool> addAskGive({required Map<String, dynamic> askGiveData}) async {
     try {
       var formData = FormData.fromMap(askGiveData);

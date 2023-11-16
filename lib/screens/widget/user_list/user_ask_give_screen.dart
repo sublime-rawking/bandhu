@@ -5,7 +5,6 @@ import 'package:bandhu/screens/widget/home/calendar_card_widget.dart';
 import 'package:bandhu/screens/widget/home/listview_card_widget.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
-import 'package:bandhu/utils/week_slider_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -21,7 +20,12 @@ class UserAskGiveScreen extends ConsumerStatefulWidget {
 }
 
 class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
-  final userSelectedWeekProvider = StateProvider((ref) => 1);
+  final userSelectedWeekProvider = StateProvider((ref) {
+    DateTime date = DateTime.now();
+    int firstDayOfMonthWeekday = DateTime(date.year, date.month, 1).weekday;
+    int adjustedDayOfMonth = date.day + firstDayOfMonthWeekday - 1;
+    return (adjustedDayOfMonth / 7).ceil();
+  });
   final userSelectedDateTimeProvider = StateProvider((ref) => DateTime.now());
   final loader = StateProvider((ref) => true);
   final userListViewDataProvider = StateProvider(
@@ -57,7 +61,6 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
             "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
     ref.watch(gridViewDataProvider.notifier).state = await AskGive()
         .getAskGiveByMonth(
-            week: ref.watch(userSelectedWeekProvider),
             id: widget.userdata.userid,
             month:
                 "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
@@ -139,31 +142,21 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
             ),
             TabBarView(
               children: [
-                Column(
-                  children: [
-                    WeekSlider(
-                        refresh: () => refresh(),
-                        data: gridCardData,
-                        selectedWeekProvider: userSelectedWeekProvider),
-                    ref.watch(loader)
-                        ? const Center(child: CircularProgressIndicator())
-                        : GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    childAspectRatio: 1.2 / 1,
-                                    crossAxisCount: 2),
-                            shrinkWrap: true,
-                            itemCount: gridCardData.length,
-                            itemBuilder: (context, index) => CalendarCard(
-                                cardColor: colorAccentCard,
-                                count: gridCardData[index]["task_count"]
-                                    .toString(),
-                                date: DateTime.parse(gridCardData[index]["list"]
-                                        [0]["date"]
-                                    .toString())),
-                          ),
-                  ],
-                ),
+                ref.watch(loader)
+                    ? const Center(child: CircularProgressIndicator())
+                    : GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                childAspectRatio: 1.2 / 1, crossAxisCount: 2),
+                        shrinkWrap: true,
+                        itemCount: gridCardData.length,
+                        itemBuilder: (context, index) => CalendarCard(
+                            cardColor: colorAccentCard,
+                            count: gridCardData[index]["task_count"].toString(),
+                            date: DateTime.parse(gridCardData[index]["list"][0]
+                                    ["date"]
+                                .toString())),
+                      ),
                 ref.watch(loader)
                     ? const Center(child: CircularProgressIndicator())
                     : ListView.builder(

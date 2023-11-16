@@ -15,7 +15,12 @@ final StateProvider<User> userDataProvider = StateProvider<User>(
     (ref) => User(email: "", name: "", userid: "", image: "", phone: ""));
 
 final screenIndexProvider = StateProvider((ref) => 0);
-final selectedWeekProvider = StateProvider((ref) => 1);
+final selectedWeekProvider = StateProvider((ref) {
+  DateTime date = DateTime.now();
+  int firstDayOfMonthWeekday = DateTime(date.year, date.month, 1).weekday;
+  int adjustedDayOfMonth = date.day + firstDayOfMonthWeekday - 1;
+  return (adjustedDayOfMonth / 7).ceil();
+});
 final selectedDateTimeProvider = StateProvider((ref) => DateTime.now());
 final TextEditingController searchController = TextEditingController();
 
@@ -28,7 +33,7 @@ final listViewDataProvider = FutureProvider((ref) async => await AskGive()
 final gridViewDataProvider = FutureProvider((ref) async => await AskGive()
     .getAskGiveByMonth(
         id: ref.watch(userDataProvider).userid,
-        week: ref.watch(selectedWeekProvider),
+        // week: ref.watch(selectedWeekProvider),
         month:
             "${ref.read(selectedDateTimeProvider).year}-${ref.read(selectedDateTimeProvider).month}"));
 
