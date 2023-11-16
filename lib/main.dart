@@ -12,22 +12,30 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// The entry point of the application.
 void main() {
+  // Initialize Flutter widgets bindings.
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Preserve native splash screen.
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Run the application.
   runApp(
     ProviderScope(
       child: MaterialApp(
         title: 'Bandhu',
         theme: ThemeData(
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.white,
-              elevation: 0,
-            ),
-            scaffoldBackgroundColor: Colors.white,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.red)
-                .copyWith(background: Colors.white)),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            elevation: 0,
+          ),
+          scaffoldBackgroundColor: Colors.white,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.red)
+              .copyWith(background: Colors.white),
+        ),
+        // Set the home page of the application.
         home: const Main(),
       ),
     ),
@@ -37,6 +45,7 @@ void main() {
 class Main extends ConsumerStatefulWidget {
   const Main({super.key});
 
+  /// Creates the state for the [Main] widget.
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MainState();
 }
@@ -44,6 +53,8 @@ class Main extends ConsumerStatefulWidget {
 class _MainState extends ConsumerState<Main> {
   double loader = 0;
   final userLoaded = StateProvider<bool>((ref) => false);
+
+  /// Calls the initialization state.
   callInitState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.getString("user") != null) {
@@ -70,6 +81,9 @@ class _MainState extends ConsumerState<Main> {
     return AnimatedOpacity(
         duration: const Duration(seconds: 1),
         opacity: loader,
-        child: ref.read(userLoaded) ? const Navbar() : const LoginScreen());
+        child: ref.read(userLoaded)
+            ? const Navbar() // Show the Navbar if userLoaded is true
+            : const LoginScreen() // Show the LoginScreen if userLoaded is false
+        );
   }
 }

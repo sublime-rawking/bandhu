@@ -15,15 +15,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth {
   final dio = Dio();
-  Future getUserData(
-      {required WidgetRef ref, required BuildContext context}) async {
+
+  /// Fetches user data from the API.
+  ///
+  /// Returns `true` if the data is fetched successfully, `false` otherwise.
+  /// Throws an exception and displays an error message if something goes wrong.
+  Future<bool> getUserData({
+    required WidgetRef ref,
+    required BuildContext context,
+  }) async {
     try {
-      var response = await dio.get("$baseUrl/Api/getMembersbyID",
-          queryParameters: {"id": ref.read(userDataProvider).userid});
+      // Make API request to get user data
+      var response = await dio.get(
+        "$baseUrl/Api/getMembersbyID",
+        queryParameters: {"id": ref.read(userDataProvider).userid},
+      );
+
       var databody = jsonDecode(response.data);
+
       write(databody.toString());
+
       if (databody["MembersbyID"]["status"].toString() == "2") {
+        // Log out the user if their account is disabled
         logOut(context: context, ref: ref);
+
         Fluttertoast.showToast(
           msg: "User Disabled by Administrator",
           toastLength: Toast.LENGTH_SHORT,
@@ -32,13 +47,19 @@ class Auth {
           backgroundColor: colorPrimary,
           textColor: white,
         );
+
         return false;
       }
+
       if (databody["success"] == true) {
+        // Save user data to SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("user", jsonEncode(databody["MembersbyID"]));
+
+        // Update user data in the app state
         ref.watch(userDataProvider.notifier).state =
             User.fromMap(databody["MembersbyID"]);
+
         return true;
       } else {
         Fluttertoast.showToast(
@@ -49,10 +70,12 @@ class Auth {
           backgroundColor: colorPrimary,
           textColor: white,
         );
+
         return false;
       }
     } catch (e) {
       write(e.toString());
+
       Fluttertoast.showToast(
         msg: "Something went wrong",
         toastLength: Toast.LENGTH_SHORT,
@@ -61,39 +84,68 @@ class Auth {
         backgroundColor: colorPrimary,
         textColor: white,
       );
+      return false;
     }
   }
 
-  Future signUp(
-      {required Map<String, String> userData,
-      required WidgetRef ref,
-      required BuildContext context}) async {
+  /// Sign up function that sends a POST request to the specified API endpoint
+  /// with the provided user data.
+  ///
+  /// Parameters:
+  /// - userData: A map containing the user data.
+  /// - ref: The widget reference.
+  /// - context: The build context.
+  ///
+  /// Returns:
+  /// - A boolean indicating whether the sign up was successful or not.
+  Future signUp({
+    required Map<String, String> userData,
+    required WidgetRef ref,
+    required BuildContext context,
+  }) async {
     try {
+      // Create a multipart request for the sign up endpoint
       var request = http.MultipartRequest(
         'POST',
         Uri.parse("$baseUrl/Api/signup"),
       );
+
+      // Add all the user data fields to the request
       request.fields.addAll(userData);
 
+      // If a profile picture is provided, add it to the request
       if (userData["Profile"].toString() != "") {
         request.files.add(await http.MultipartFile.fromPath(
           'Profile',
           userData["Profile"].toString(),
         ));
       }
-      // var res = await request.send();
+
+      // Send the request and get the response
       http.Response response =
           await http.Response.fromStream(await request.send());
+
+      // Decode the response body
       var databody = jsonDecode(response.body);
+
+      // Write the response body to the console
       write(databody.toString());
+
+      // If the sign up was successful, save the user data to shared preferences
       if (databody["success"] == true) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("user", jsonEncode(databody["data"]));
+
+        // Update the user data in the widget reference
         ref.watch(userDataProvider.notifier).state =
             User.fromMap(databody["data"]);
+
+        // Get additional user data
         await getUserData(ref: ref, context: context);
+
         return true;
       } else {
+        // Show an error toast message if sign up failed
         Fluttertoast.showToast(
           msg: databody["message"],
           toastLength: Toast.LENGTH_SHORT,
@@ -105,6 +157,7 @@ class Auth {
         return false;
       }
     } catch (e) {
+      // Show a generic error toast message if an exception occurred
       write(e.toString());
       Fluttertoast.showToast(
         msg: "Something went wrong",
@@ -117,17 +170,26 @@ class Auth {
     }
   }
 
-  Future signIn(
-      {required Map<String, dynamic> authData,
-      required WidgetRef ref,
-      required BuildContext context}) async {
+  /// Signs in the user with the provided authentication data.
+  /// Returns `true` if the sign-in is successful, `false` otherwise.
+  /// Throws an exception if an error occurs.
+  Future<bool> signIn({
+    required Map<String, dynamic> authData,
+    required WidgetRef ref,
+    required BuildContext context,
+  }) async {
     try {
+      // Make a GET request to the login endpoint with the authentication data
       var res = await dio.get("$baseUrl/Api/login", queryParameters: authData);
       var databody = jsonDecode(res.data);
       write(databody.toString());
+
       if (databody["success"] == true) {
         if (databody["login"]["status"].toString() == "2") {
+          // Log out the user if their status is 2 (disabled)
           logOut(context: context, ref: ref);
+
+          // Show a toast message to inform the user
           Fluttertoast.showToast(
             msg: "User Disabled by Administrator",
             toastLength: Toast.LENGTH_SHORT,
@@ -139,13 +201,17 @@ class Auth {
           return false;
         }
 
+        // Save the user data to SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString("user", jsonEncode(databody["login"]));
+
+        // Update the user data in the app state
         ref.watch(userDataProvider.notifier).state =
             User.fromMap(databody["login"]);
 
         return true;
       } else {
+        // Show a toast message with the error status
         Fluttertoast.showToast(
           msg: databody["status"],
           toastLength: Toast.LENGTH_SHORT,
@@ -157,6 +223,7 @@ class Auth {
         return false;
       }
     } catch (e) {
+      // Handle any exceptions that occur and show a generic error message
       write(e.toString());
       Fluttertoast.showToast(
         msg: "Something went wrong",
@@ -170,24 +237,48 @@ class Auth {
     }
   }
 
+  /// Uploads a PDF file to the server.
+  ///
+  /// Parameters:
+  /// - `filePath`: The path of the PDF file to upload.
+  /// - `ref`: The reference to the `WidgetRef` object.
+  ///
+  /// Returns:
+  /// - A `Future` that completes with a boolean indicating the success of the upload.
   Future uploadPDF({required String filePath, required WidgetRef ref}) async {
     try {
+      // Create a multipart request with the POST method
       var request = http.MultipartRequest(
         'POST',
         Uri.parse("$baseUrl/Api/updatepdf"),
       );
+
+      // Add the PDF file to the request
       request.files.add(await http.MultipartFile.fromPath(
         'DCP',
         filePath,
       ));
+
+      // Add the user ID to the request fields
       request.fields.addAll({"id": ref.read(userDataProvider).userid});
+
+      // Send the request and get the response
       http.Response response =
           await http.Response.fromStream(await request.send());
+
+      // Decode the response body
       var databody = jsonDecode(response.body);
+
+      // Write the response body to the console
       write(databody.toString());
+
+      // Return the value of the "success" field from the response body
       return databody["success"];
     } catch (e) {
+      // Write the error message to the console
       write(e.toString());
+
+      // Show a toast message indicating that something went wrong
       Fluttertoast.showToast(
         msg: "Something went wrong",
         toastLength: Toast.LENGTH_SHORT,
@@ -196,20 +287,36 @@ class Auth {
         backgroundColor: colorPrimary,
         textColor: white,
       );
+
+      // Return false to indicate failure
       return false;
     }
   }
 
-  Future forgetPassword({required String email}) async {
+  /// Sends a password reset request for the given [email].
+  ///
+  /// Returns `true` if the request was successful, otherwise `false`.
+  Future<bool> forgetPassword({required String email}) async {
     try {
+      // Create form data with the email
       var formData = FormData.fromMap({"email_id": email});
+
+      // Send a POST request to the forgot_password API endpoint
       var res = await dio.post("$baseUrl/Api/forgot_password", data: formData);
 
+      // Parse the response body as JSON
       var databody = jsonDecode(res.data);
+
+      // Write the response body to a log
       write(databody.toString());
+
+      // Return the value of the "success" field from the response body
       return databody["success"];
     } catch (e) {
+      // Write the error to a log
       write(e.toString());
+
+      // Show a toast message indicating an error occurred
       Fluttertoast.showToast(
         msg: "Something went wrong",
         toastLength: Toast.LENGTH_SHORT,
@@ -218,10 +325,15 @@ class Auth {
         backgroundColor: colorPrimary,
         textColor: white,
       );
+
+      // Return false to indicate the request failed
       return false;
     }
   }
 
+  /// This method verifies the OTP for a given email and password.
+  /// It makes a POST request to the API endpoint "/Api/verificationotp" with the provided parameters.
+  /// Returns a boolean indicating whether the verification was successful or not.
   Future verifyOTP(
       {required String email,
       required String otp,
@@ -247,16 +359,25 @@ class Auth {
     }
   }
 
+  /// Logs out the user and clears the shared preferences.
+  ///
+  /// Parameters:
+  /// - `context`: The build context.
+  /// - `ref`: The widget reference.
   Future logOut({required BuildContext context, required WidgetRef ref}) async {
     try {
       await SharedPreferences.getInstance().then((prefs) {
-        prefs.clear();
-        ref.watch(screenIndexProvider.notifier).state = 0;
-        Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (c) => const Main()), (route) => false);
+        prefs.clear(); // Clear the shared preferences
+        ref.watch(screenIndexProvider.notifier).state =
+            0; // Reset the screen index
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (c) => const Main()),
+            (route) =>
+                false); // Navigate to the Main screen and remove all previous screens
       });
-    } catch (ex) {
-      write(ex.toString());
+    } catch (e) {
+      write(e.toString()); // Log the error
       Fluttertoast.showToast(
         msg: "Something went wrong",
         toastLength: Toast.LENGTH_SHORT,
@@ -264,7 +385,7 @@ class Auth {
         timeInSecForIosWeb: 1,
         backgroundColor: colorPrimary,
         textColor: white,
-      );
+      ); // Show a toast message
     }
   }
 }

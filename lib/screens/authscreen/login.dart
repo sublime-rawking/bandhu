@@ -31,7 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (validatePhoneNumber()) {
       Fluttertoast.showToast(
-        msg: "Invalid phone number",
+        msg: "Mobile no cannot be empty",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,

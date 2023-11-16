@@ -5,7 +5,6 @@ import 'package:bandhu/screens/widget/home/calendar_card_widget.dart';
 import 'package:bandhu/screens/widget/home/listview_card_widget.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
-import 'package:bandhu/utils/week_slider_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -120,26 +119,18 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   error: (err, stack) =>
                       const Text('Error: Something Went Wrong'),
-                  data: (data) => Column(
-                    children: [
-                      WeekSlider(
-                          refresh: () {},
-                          data: data,
-                          selectedWeekProvider: selectedWeekProvider),
-                      GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                childAspectRatio: 1.2 / 1, crossAxisCount: 2),
-                        shrinkWrap: true,
-                        itemCount: data.length,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (context, index) => CalendarCard(
-                            cardColor: colorAccentCard,
-                            count: data[index]["task_count"].toString(),
-                            date: DateTime.parse(
-                                data[index]["list"][0]["date"].toString())),
-                      ),
-                    ],
+                  data: (data) => GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio: 1.2 / 1, crossAxisCount: 2),
+                    shrinkWrap: true,
+                    itemCount: data.length,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => CalendarCard(
+                        cardColor: colorAccentCard,
+                        count: data[index]["task_count"].toString(),
+                        date: DateTime.parse(
+                            data[index]["list"][0]["date"].toString())),
                   ),
                 ),
                 listViewData.when(
