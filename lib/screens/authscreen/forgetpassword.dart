@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
@@ -9,15 +7,21 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pinput/pinput.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void openSendForgetPassword({required BuildContext context}) => showDialog(
+void openSendForgetPassword(
+        {required BuildContext context,
+        String title = "Forgot Password",
+        String email = ""}) =>
+    showDialog(
       context: context,
       builder: (BuildContext context) {
-        return const SendForgetPasswordRequest();
+        return SendForgetPasswordRequest(title: title, email: email);
       },
     );
 
 class SendForgetPasswordRequest extends ConsumerStatefulWidget {
-  const SendForgetPasswordRequest({super.key});
+  final String title, email;
+  const SendForgetPasswordRequest(
+      {super.key, required this.title, required this.email});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -45,7 +49,9 @@ class _SendForgetPasswordRequestState
     ref.watch(loader.notifier).state = true;
     if (validateEmail()) {
       Fluttertoast.showToast(
-        msg: 'Invalid email',
+        msg: emailController.text.trim().isEmpty
+            ? 'Email cannot be empty'
+            : 'Invalid email',
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -92,6 +98,11 @@ class _SendForgetPasswordRequestState
 
   @override
   Widget build(BuildContext context) {
+    if (widget.email.isNotEmpty) {
+      setState(() {
+        emailController.text = widget.email;
+      });
+    }
     double width = MediaQuery.of(context).size.width;
     return Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -103,7 +114,7 @@ class _SendForgetPasswordRequestState
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Forgot Password",
+                widget.title,
                 textAlign: TextAlign.center,
                 style: fontSemiBold14.copyWith(color: colorAccent),
               ),
@@ -111,6 +122,7 @@ class _SendForgetPasswordRequestState
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: TextField(
                   controller: emailController,
+                  readOnly: widget.email.isNotEmpty,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: "Enter Email",
@@ -223,12 +235,11 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
             otp: otpContollerProvider.text,
             password: passwordController.text)
         .then((value) {
-      log(value.toString());
-      if (!value) {
+      if (!value["success"]) {
         showDialog(
             context: context,
-            builder: (_) => const ResetPasswordDialog(
-                  msg: 'Something went wrong',
+            builder: (_) => ResetPasswordDialog(
+                  msg: value["status"],
                   status: false,
                 ));
         return;
@@ -286,7 +297,7 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                         Padding(
                           padding: const EdgeInsets.only(top: 60, bottom: 40),
                           child: Text(
-                            "Verifiy your otp",
+                            "Verify your OTP",
                             textAlign: TextAlign.left,
                             style: fontSemiBold20.copyWith(color: black),
                           ),

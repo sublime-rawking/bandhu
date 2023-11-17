@@ -17,7 +17,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   onPressLogout() async => await Auth().logOut(context: context, ref: ref);
   // navigate to forget password screen
 
-  onPressForgetPassword() => openSendForgetPassword(context: context);
+  onPressForgetPassword() => openSendForgetPassword(
+      context: context,
+      title: "Change Password",
+      email: ref.read(userDataProvider).email);
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -151,7 +154,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         TextButton(
                             onPressed: onPressForgetPassword,
                             child: Text(
-                              "Forget Password?",
+                              "Change Password?",
                               style:
                                   fontSemiBold14.copyWith(color: colorPrimary),
                             )),

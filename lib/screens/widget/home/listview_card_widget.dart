@@ -67,12 +67,7 @@ Widget dateFeild(
             text: 'Ask : ',
             style: fontSemiBold12.copyWith(color: Colors.black),
             children: [
-              TextSpan(
-                text: askData,
-                style: fontMedium12.copyWith(
-                  overflow: TextOverflow.fade,
-                ),
-              ),
+              TextSpan(text: askData, style: fontMedium12),
             ],
           ),
           softWrap: true,
@@ -84,12 +79,7 @@ Widget dateFeild(
             text: 'Give : ',
             style: fontSemiBold12.copyWith(color: Colors.black),
             children: [
-              TextSpan(
-                text: giveData,
-                style: fontMedium12.copyWith(
-                  overflow: TextOverflow.fade,
-                ),
-              ),
+              TextSpan(text: giveData, style: fontMedium12),
             ],
           ),
           softWrap: true,
@@ -101,12 +91,7 @@ Widget dateFeild(
             text: 'Remark : ',
             style: fontSemiBold12.copyWith(color: Colors.black),
             children: [
-              TextSpan(
-                text: remarkData,
-                style: fontMedium12.copyWith(
-                  overflow: TextOverflow.fade,
-                ),
-              ),
+              TextSpan(text: remarkData, style: fontMedium12),
             ],
           ),
           softWrap: true,

@@ -20,7 +20,7 @@ class CalendarCard extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(10),
@@ -32,11 +32,12 @@ class CalendarCard extends ConsumerWidget {
         children: [
           Text(
             formatDate,
-            style: fontMedium16.copyWith(color: Colors.black),
+            style: fontMedium14.copyWith(color: Colors.black),
           ),
           const Spacer(),
           Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
@@ -47,7 +48,7 @@ class CalendarCard extends ConsumerWidget {
               Text(
                 count,
                 style:
-                    fontSemiBold16.copyWith(fontSize: 30, color: Colors.black),
+                    fontSemiBold16.copyWith(fontSize: 26, color: Colors.black),
               ),
             ],
           )

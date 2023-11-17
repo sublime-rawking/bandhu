@@ -97,25 +97,31 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         ),
       );
       return;
-    } else if (emailController.text.isEmpty) {
+    } else if (emailController.text.isEmpty || validateEmail()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Please enter your email"),
         ),
       );
       return;
-    } else if (phoneNumberController.text.isEmpty) {
+    } else if (validatePhoneNumber()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Please enter your phone number"),
         ),
       );
       return;
-    } else if (passwordController.text.isEmpty ||
-        conPasswordController.text.isEmpty) {
+    } else if (passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please enter your password properly"),
+          content: Text("Please enter your password"),
+        ),
+      );
+      return;
+    } else if (conPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your confirm password"),
         ),
       );
       return;
@@ -295,7 +301,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       TextField(
                         controller: conPasswordController,
                         decoration: InputDecoration(
-                          hintText: "Comfirm Your Password",
+                          hintText: "Confirm Your Password",
                           suffixIcon: IconButton(
                             icon: Icon(
                               isConObscured
