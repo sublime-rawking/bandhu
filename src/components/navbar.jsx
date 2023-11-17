@@ -7,11 +7,33 @@ import {
 } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import useAuth from "../context/userContext";
+// import { useNavigate, useLocation } from "react-router-dom";
 
 function NavList() {
   const { logOut } = useAuth();
+  // const navigate = useNavigate();
+  // const location = useLocation();
   return (
     <ul className="my-2 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+      {/* <Typography
+        as="li"
+        variant="small"
+        color="white"
+        className="p-1 font-medium"
+      >
+        <button
+          onClick={() =>
+            location.pathname === "/reports"
+              ? navigate("/dashboard")
+              : navigate("/reports")
+          }
+          type="button"
+          className="flex items-center hover:text-black transition-colors"
+        >
+          {location.pathname === "/reports" ? "Dashboard" : "Reports"}
+        </button>
+      </Typography> */}
+
       <Typography
         as="li"
         variant="small"
@@ -23,7 +45,7 @@ function NavList() {
           type="button"
           className="flex items-center hover:text-black transition-colors"
         >
-          logout
+          Logout
         </button>
       </Typography>
     </ul>

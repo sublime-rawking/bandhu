@@ -12,13 +12,14 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   // const history = useHistory();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(loginData);
-    loginWithEmail({
+
+    var res = await loginWithEmail({
       userName: loginData.username,
       password: loginData.password,
     });
+    return res;
   };
 
   return (

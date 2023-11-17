@@ -1,32 +1,29 @@
 import React, { useEffect, useState } from "react";
 import UserTable from "../components/userTable";
 import Navbar from "../components/navbar";
-import { users } from "../data/users";
+// import { users } from "../data/users";
 import { withProtected } from "../context/protectedroutes";
-
+import { Spinner } from "@material-tailwind/react";
 import { GetUsers } from "../api/usersApi";
 const Dashboard = () => {
-  const [username, setUsername] = useState("User"); // Replace "User" with actual username
-
+  const [usersData, setUsersData] = useState([]); // Replace "User" with actual username
+  const [loader, setLoader] = useState(true);
   async function getUsers() {
     const data = await GetUsers();
-    console.log(data);
+    setUsersData(data);
+    setLoader(false);
   }
-
-  // useEffect(() => {
-  //   getUsers();
-  // }, []);
-
-  const handleLogout = () => {
-    console.log("User logged out");
-    // Add your logout logic here
-  };
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <div>
       <Navbar />
       <br />
-      <UserTable data={users} />
+    {  loader ? 
+    <Spinner className="h-12 w-12 mx-auto text-primary " color="amber"/>
+    : <UserTable data={usersData} />}
     </div>
   );
 };
