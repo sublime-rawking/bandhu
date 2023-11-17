@@ -33,8 +33,6 @@ class Auth {
 
       var databody = jsonDecode(response.data);
 
-      write(databody.toString());
-
       if (databody["MembersbyID"]["status"].toString() == "2") {
         // Log out the user if their account is disabled
         logOut(context: context, ref: ref);
@@ -344,7 +342,7 @@ class Auth {
       var res = await dio.post("$baseUrl/Api/verificationotp", data: formData);
       var databody = jsonDecode(res.data);
       write(databody.toString());
-      return databody["success"];
+      return databody;
     } catch (e) {
       write(e.toString());
       Fluttertoast.showToast(
