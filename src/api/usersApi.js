@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-export const baseUrl = 'http://192.168.29.129/BNI_25oct18/BNI_25oct18';
+// export const import.meta.env.BASE_URL = 'http://192.168.29.129/BNI_25oct18/BNI_25oct18';
 
 export async function GetUsers() {
     try {
-        var res = await axios.get(`${baseUrl}/Api/getMembers`);
+        var res = await axios.get(`${import.meta.env.VITE_BASEURL}/Api/getMembers`);
         var resBody = res.data;
         if (resBody["success"]) {
 
@@ -23,7 +23,7 @@ export async function StatusUsers({ userId, status }) {
         const formData = new FormData();
         formData.append('id', userId);
         formData.append('status', status);
-        var res = await axios.post(`${baseUrl}/Api/userstatus`, formData);
+        var res = await axios.post(`${import.meta.env.VITE_BASEURL}/Api/userstatus`, formData);
         var resBody = res.data;
         if (resBody["res"] == "2") {
             toast("User disabled successfully", {

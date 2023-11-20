@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import UserTable from "../components/userTable";
 import Navbar from "../components/navbar";
-// import { users } from "../data/users";
 import { withProtected } from "../context/protectedroutes";
 import { Spinner } from "@material-tailwind/react";
 import { GetUsers } from "../api/usersApi";
