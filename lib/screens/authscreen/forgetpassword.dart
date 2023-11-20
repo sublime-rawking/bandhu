@@ -65,14 +65,6 @@ class _SendForgetPasswordRequestState
     await Auth().forgetPassword(email: emailController.text).then((res) {
       ref.watch(loader.notifier).state = false;
       if (!res) {
-        Fluttertoast.showToast(
-          msg: "Something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: colorPrimary,
-          textColor: white,
-        );
         return;
       }
       Fluttertoast.showToast(

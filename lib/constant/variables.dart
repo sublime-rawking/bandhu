@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // server endpoint
 
-const baseUrl = "http://192.168.29.129/BNI_25oct18/BNI_25oct18";
+const baseUrl = "http://5.189.156.172/BNI";
 const imageBaseUrl =
-    "http://192.168.29.129/BNI_25oct18/BNI_25oct18/uploads/photo";
+    "http://5.189.156.172/BNI";
 
 const defaultprofileImage = "assets/images/default.png";
 final StateProvider<User> userDataProvider = StateProvider<User>(

@@ -307,7 +307,14 @@ class Auth {
 
       // Write the response body to a log
       write(databody.toString());
-
+      Fluttertoast.showToast(
+        msg: databody["message"],
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
       // Return the value of the "success" field from the response body
       return databody["success"];
     } catch (e) {
