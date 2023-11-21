@@ -18,6 +18,43 @@ export async function GetUsers() {
     }
 }
 
+export async function addUser({ name, email, password, mobile, profile }) {
+    try {
+        const formData = new FormData();
+        formData.append('Name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('Mobile', mobile);
+        formData.append('Profile', profile);
+        var res = await axios.post(`${import.meta.env.VITE_BASEURL}/Api/signup`, formData);
+        var resBody = res.data;
+        console.log(resBody);
+        if (resBody["success"]) {
+            toast("User added successfully", {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                closeOnClick: true,
+                draggable: true,
+            });
+            return true;
+        } else {
+            toast.error(resBody["message"], {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                closeOnClick: true,
+                draggable: true,
+            });
+        }
+        return false;
+    } catch (error) {
+        console.error(error);
+        toast("Something went wrong", {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            closeOnClick: true,
+            draggable: true,
+        });
+        return false;
+    }
+}
+
 export async function StatusUsers({ userId, status }) {
     try {
         const formData = new FormData();
