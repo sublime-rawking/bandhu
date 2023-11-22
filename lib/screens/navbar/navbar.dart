@@ -37,16 +37,14 @@ class _NavbarState extends ConsumerState<Navbar> {
   ) {
     int index = ref.watch(screenIndexProvider);
     return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(
-          index: index,
-          children: const [
-            HomeScreen(),
-            UserListScreen(),
-            PdfProfileScreen(),
-            ProfileScreen()
-          ],
-        ),
+      body: IndexedStack(
+        index: index,
+        children: const [
+          HomeScreen(),
+          UserListScreen(),
+          PdfProfileScreen(),
+          ProfileScreen()
+        ],
       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterDocked,

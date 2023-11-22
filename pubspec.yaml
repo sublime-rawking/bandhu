@@ -57,6 +57,7 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^23.1.39
   file_picker: ^6.0.0
   flutter_launcher_icons: ^0.13.1
+  insta_image_viewer: ^1.0.2
  
 
 dev_dependencies:
