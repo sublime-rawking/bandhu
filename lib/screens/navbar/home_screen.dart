@@ -120,6 +120,7 @@ class HomeScreen extends ConsumerWidget {
                   error: (err, stack) =>
                       const Text('Error: Something Went Wrong'),
                   data: (data) => GridView.builder(
+                    padding: const EdgeInsets.only(bottom: 20, top: 10),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                             childAspectRatio: 1.2 / 1, crossAxisCount: 2),
@@ -142,6 +143,7 @@ class HomeScreen extends ConsumerWidget {
                   data: (data) => RefreshIndicator(
                     onRefresh: refresh,
                     child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 20, top: 10),
                       itemCount: data.length,
                       reverse: false,
                       physics: const AlwaysScrollableScrollPhysics(),

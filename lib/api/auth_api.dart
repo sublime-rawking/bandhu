@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/main.dart';
@@ -57,7 +56,7 @@ class Auth {
         // Update user data in the app state
         ref.watch(userDataProvider.notifier).state =
             User.fromMap(databody["MembersbyID"]);
-
+        write(databody["MembersbyID"].toString());
         return true;
       } else {
         Fluttertoast.showToast(
@@ -350,6 +349,64 @@ class Auth {
       var databody = jsonDecode(res.data);
       write(databody.toString());
       return databody;
+    } catch (e) {
+      write(e.toString());
+      Fluttertoast.showToast(
+        msg: "Something went wrong",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return false;
+    }
+  }
+
+  Future updateUser({
+    required Map<String, String> userData,
+    required WidgetRef ref,
+    required BuildContext context,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("$baseUrl/Api/updateuser"),
+      );
+
+      // Add all the user data fields to the request
+      request.fields.addAll(userData);
+      // If a profile picture is provided, add it to the request
+      if (userData["Profile"] != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'Profile',
+          userData["Profile"].toString(),
+        ));
+      }
+
+      // Send the request and get the response
+      http.Response response =
+          await http.Response.fromStream(await request.send());
+
+      // Write the response body to the console
+
+      // If the sign up was successful, save the user data to shared preferences
+      if (response.statusCode == 200 && response.body.isEmpty) {
+        // Get additional user data
+        await getUserData(ref: ref, context: context);
+
+        return true;
+      }
+      // Show an error toast message if sign up failed
+      Fluttertoast.showToast(
+        msg: jsonDecode(response.body)["message"],
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return false;
     } catch (e) {
       write(e.toString());
       Fluttertoast.showToast(

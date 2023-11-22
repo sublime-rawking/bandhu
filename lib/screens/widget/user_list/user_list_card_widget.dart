@@ -6,6 +6,7 @@ import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:insta_image_viewer/insta_image_viewer.dart';
 
 class UserListCardWidget extends ConsumerWidget {
   final User userData;
@@ -33,10 +34,14 @@ class UserListCardWidget extends ConsumerWidget {
         onTap: onPressCard,
         child: Row(
           children: [
-            CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.transparent,
-                foregroundImage: NetworkImage("$baseUrl/${userData.image}")),
+            InstaImageViewer(
+              backgroundIsTransparent: false,
+              backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+              child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.transparent,
+                  foregroundImage: NetworkImage("$baseUrl/${userData.image}")),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
