@@ -4,9 +4,9 @@ import 'package:bandhu/screens/widget/user_list/user_ask_give_screen.dart';
 import 'package:bandhu/screens/widget/user_list/user_profile_pdf_screen.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:insta_image_viewer/insta_image_viewer.dart';
 
 class UserListCardWidget extends ConsumerWidget {
   final User userData;
@@ -21,6 +21,9 @@ class UserListCardWidget extends ConsumerWidget {
                   userdata: userData,
                 )));
 
+    onPressProfile() => showImageViewer(
+        context, Image.network("$baseUrl/${userData.image}").image,
+        onViewerDismissed: () {});
     onPressOpenPDF() => Navigator.push(
         context,
         MaterialPageRoute(
@@ -34,9 +37,8 @@ class UserListCardWidget extends ConsumerWidget {
         onTap: onPressCard,
         child: Row(
           children: [
-            InstaImageViewer(
-              backgroundIsTransparent: false,
-              backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+            InkWell(
+              onTap: onPressProfile,
               child: CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.transparent,

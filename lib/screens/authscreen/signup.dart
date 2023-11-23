@@ -139,7 +139,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     // get all the fields in Map Object
     Map<String, String> userData = {
       "Name": fullNameController.text,
-      "email": emailController.text,
+      "email": emailController.text.toLowerCase(),
       "Mobile": phoneNumberController.text,
       "password": passwordController.text,
       "Profile": ref.watch(_selectedImageProvider).toString() != ""
