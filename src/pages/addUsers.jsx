@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+
 import PropTypes from "prop-types";
 import { addUser } from "../api/usersApi";
 
@@ -29,6 +31,7 @@ export default function AddUsers({ handleModel }) {
     // Create an object URL to preview the image
     setProfileSrc(URL.createObjectURL(file));
   };
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,12 +88,12 @@ export default function AddUsers({ handleModel }) {
           onClick={handleModel}
         >
           <label
-            className="block text-white text-sm font-bold  "
+            className="block text-white text-sm font-bold"
             htmlFor="profile"
           >
             Profile
           </label>
-          <XMarkIcon className="h-6 w-6 text-white" />
+          <XMarkIcon className="h-6 w-6 text-white cursor-pointer" />
         </div>
 
         <div className=" my-3 ">
@@ -135,7 +138,7 @@ export default function AddUsers({ handleModel }) {
           </div>
           <div className="mb-4">
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-white text-sm font-bold mb-2"
               htmlFor="email"
             >
               Email
@@ -159,17 +162,38 @@ export default function AddUsers({ handleModel }) {
             >
               Password
             </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              value={user.password}
-              required
-              onChange={(e) =>
-                setUser((prev) => ({ ...prev, password: e.target.value }))
-              }
-            />
+
+            <div className="relative h-auto mb-3">
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={user.password}
+                required
+                onChange={(e) =>
+                  setUser((prev) => ({ ...prev, password: e.target.value }))
+                }
+              />
+              <button
+                type="button"
+                className="absolute w-9 text-center right-0 pr-3 my-2 items-center"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon
+                    className="items-center m-auto text-black"
+                    strokeWidth={2}
+                  />
+                ) : (
+                  <EyeIcon
+                    className="items-center  m-auto text-black"
+                    strokeWidth={2}
+                  />
+                )}
+              </button>
+            </div>
           </div>
+
           <div className="mb-4">
             <label
               className="block text-white text-sm font-bold mb-2"
