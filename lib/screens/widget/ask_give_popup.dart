@@ -57,8 +57,8 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
       "given": _giveController.text,
       "remark": _remarkController.text,
     };
-    await AskGive().addAskGive(askGiveData: askGiveData).then((value) {
-      Auth().getUserData(ref: ref, context: context);
+    await AskGive().addAskGive(askGiveData: askGiveData).then((value) async {
+      await Auth().getUserData(ref: ref, context: context);
       // ignore: unused_result
       ref.refresh(listViewDataProvider);
       // ignore: unused_result

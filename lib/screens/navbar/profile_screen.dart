@@ -1,3 +1,4 @@
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/screens/authscreen/forgetpassword.dart';
@@ -6,7 +7,6 @@ import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:insta_image_viewer/insta_image_viewer.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -25,10 +25,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       context: context,
       title: "Change Password",
       email: ref.read(userDataProvider).email);
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     final userData = ref.watch(userDataProvider);
+
+    onPressProfile() => showImageViewer(
+        context, Image.network("$baseUrl/${userData.image}").image,
+        onViewerDismissed: () {});
 
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -54,19 +59,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   Center(
                     child: Container(
+                      padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(60),
                         boxShadow: const [
                           BoxShadow(
-                            color: Colors.grey,
+                            color: Colors.black38,
                             offset: Offset(0, 2),
                             blurRadius: 4,
                           ),
                         ],
                       ),
-                      child: InstaImageViewer(
-                        backgroundIsTransparent: false,
-                        backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+                      child: InkWell(
+                        onTap: onPressProfile,
                         child: CircleAvatar(
                           radius: 60,
                           backgroundColor: Colors.transparent,

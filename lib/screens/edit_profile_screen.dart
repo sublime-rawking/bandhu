@@ -114,7 +114,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       "Name": fullNameController.text
     };
     if (ref.read(userDataProvider).email != emailController.text) {
-      userData["email"] = emailController.text;
+      userData["email"] = emailController.text.toLowerCase();
     }
     if (ref.read(userDataProvider).phone != phoneNumberController.text) {
       userData["Mobile"] = phoneNumberController.text;
