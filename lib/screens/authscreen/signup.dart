@@ -13,6 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:page_animation_transition/animations/left_to_right_transition.dart';
+import 'package:page_animation_transition/page_animation_transition.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -167,12 +169,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   onPressSignIn() => Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
-        ),
-        (route) => false,
-      );
+      context,
+      PageAnimationTransition(
+          page: const LoginScreen(),
+          pageAnimationType: LeftToRightTransition()),
+      (route) => false);
 
   @override
   Widget build(BuildContext context) {

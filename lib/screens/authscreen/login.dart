@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:page_animation_transition/animations/right_to_left_transition.dart';
+import 'package:page_animation_transition/page_animation_transition.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -73,12 +75,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   // navigate to signup screen
   onPressSignUp() => Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const SignUpScreen(),
-        ),
-        (route) => false,
-      );
+      context,
+      PageAnimationTransition(
+          page: const SignUpScreen(),
+          pageAnimationType: RightToLeftTransition()),
+      (route) => false);
 
   @override
   void initState() {

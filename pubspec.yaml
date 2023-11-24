@@ -58,6 +58,7 @@ dependencies:
   file_picker: ^6.0.0
   flutter_launcher_icons: ^0.13.1
   easy_image_viewer: ^1.2.1
+  page_animation_transition: ^1.0.0
  
 
 dev_dependencies:
@@ -106,16 +107,16 @@ flutter_launcher_icons:
   image_path: "assets/images/logo.png"
 
 flutter_native_splash:
-    image: assets/images/logoName.png
+    image: assets/images/logo.png
     color: "#ffffff"
     color_dark: "#121212"
-    image_dark: assets/images/logoName.png
+    image_dark: assets/images/logo.png
    
 
     android_12:
-      image: assets/images/logoName.png
+      image: assets/images/logo.png
       icon_background_color: "#ffffff"
-      image_dark: assets/images/logoName.png
+      image_dark: assets/images/logo.png
       icon_background_color_dark: "#121212"
 
     web: false
