@@ -24,7 +24,7 @@ void main() {
   runApp(
     ProviderScope(
       child: MaterialApp(
-        title: 'Bandhu',
+        title: 'Reffergenix',
         theme: ThemeData(
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,

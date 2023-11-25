@@ -113,7 +113,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               height: 30,
             ),
             Text(
-              "Hello!\nWelcome to Bandhu Chapter",
+              "Hello!\nWelcome to Reffergenix",
               textAlign: TextAlign.center,
               style: fontSemiBold20.copyWith(color: colorAccentLight),
             ),
@@ -197,7 +197,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onPressed: onPressSignUp,
               child: RichText(
                 text: TextSpan(
-                  text: 'New to Bandhu Chapter?\t\t',
+                  text: 'New to Reffergenix?\t\t',
                   style: fontRegular14.copyWith(color: label),
                   children: <TextSpan>[
                     TextSpan(
