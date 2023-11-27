@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
-import 'dart:developer';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/main.dart';
 import 'package:bandhu/model/user_model.dart';
@@ -343,7 +342,6 @@ class Auth {
       required String otp,
       required String password}) async {
     try {
-      log("email : $email, otp : $otp, password : $password");
       var formData =
           FormData.fromMap({"email": email, "otp": otp, "password": password});
       var res = await dio.post("$baseUrl/Api/verificationotp", data: formData);

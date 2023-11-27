@@ -170,6 +170,21 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
   final TextEditingController otpContollerProvider = TextEditingController();
 
   onPressSubmit() async {
+    if (otpContollerProvider.text.isEmpty ||
+        otpContollerProvider.text.length < 6) {
+      Fluttertoast.showToast(
+        msg: otpContollerProvider.text.length < 6 &&
+                otpContollerProvider.text.isNotEmpty
+            ? 'Please enter OTP properly'
+            : 'Please enter OTP',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: colorPrimary,
+        textColor: white,
+      );
+      return;
+    }
     if (passwordController.text.isEmpty) {
       Fluttertoast.showToast(
         msg: 'Please enter password',
@@ -201,19 +216,9 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
         backgroundColor: colorPrimary,
         textColor: white,
       );
-    }
-    if (otpContollerProvider.text.isEmpty ||
-        otpContollerProvider.text.length < 6) {
-      Fluttertoast.showToast(
-        msg: 'Please enter otp properly',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
       return;
     }
+
     await Auth()
         .verifyOTP(
             email: widget.email,
@@ -292,7 +297,7 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                           child: Text(
                             'Enter your OTP',
                             style: fontMedium14.copyWith(
-                              color: const Color(0xFF5A5A5A),
+                              color: const Color.fromARGB(255, 68, 68, 68),
                             ),
                           ),
                         ),
@@ -316,6 +321,9 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                         TextField(
                           controller: passwordController,
                           decoration: InputDecoration(
+                            hintStyle: fontMedium14.copyWith(
+                              color: const Color.fromARGB(255, 68, 68, 68),
+                            ),
                             hintText: "Enter Your Password",
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -335,6 +343,9 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
                           controller: conPasswordController,
                           decoration: InputDecoration(
                             hintText: "Comfirm Your Password",
+                            hintStyle: fontMedium14.copyWith(
+                              color: const Color.fromARGB(255, 68, 68, 68),
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 isConObscured
