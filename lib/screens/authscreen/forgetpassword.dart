@@ -67,14 +67,7 @@ class _SendForgetPasswordRequestState
       if (!res) {
         return;
       }
-      Fluttertoast.showToast(
-        msg: "Otp send",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
+
       Navigator.pop(context);
 
       Navigator.push(

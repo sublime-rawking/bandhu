@@ -102,7 +102,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     } else if (validatePhoneNumber()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Phone number field can not be empty"),
+          content: Text("Mobile number field can not be empty"),
         ),
       );
       return;
@@ -265,7 +265,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       hintText: "Enter Mobile No.",
                       errorText: validatePhoneNumber() &&
                               phoneNumberController.text.isNotEmpty
-                          ? 'Invalid phone number'
+                          ? 'Invalid mobile number'
                           : null,
                     ),
                     inputFormatters: [

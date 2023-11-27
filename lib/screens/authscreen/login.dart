@@ -126,7 +126,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   hintText: "Enter Mobile No.",
                   errorText: validatePhoneNumber() &&
                           phoneNumberController.text.isNotEmpty
-                      ? 'Invalid phone number'
+                      ? 'Invalid mobile number'
                       : null,
                 ),
                 onChanged: (value) => setState(() {

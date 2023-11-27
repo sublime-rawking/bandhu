@@ -109,7 +109,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     } else if (validatePhoneNumber()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please enter your phone number"),
+          content: Text("Please enter your mobile number"),
         ),
       );
       return;
@@ -267,7 +267,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           hintText: "Enter Mobile No.",
                           errorText: validatePhoneNumber() &&
                                   phoneNumberController.text.isNotEmpty
-                              ? 'Invalid phone number'
+                              ? 'Invalid mobile number'
                               : null,
                         ),
                         inputFormatters: [
