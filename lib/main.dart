@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/model/user_model.dart';
