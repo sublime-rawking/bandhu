@@ -264,13 +264,14 @@ class Auth {
 
       // Decode the response body
       var databody = jsonDecode(response.body);
-
+      print(response);
       // Write the response body to the console
       write(databody.toString());
 
       // Return the value of the "success" field from the response body
       return databody["success"];
     } catch (e) {
+      print(e);
       // Write the error message to the console
       write(e.toString());
 

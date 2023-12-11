@@ -187,7 +187,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     )
                   : Text(
                       "Sign in",
-                      style: fontMedium14,
+                      style: fontMedium14.copyWith(color: white),
                     ),
             ),
             const SizedBox(
