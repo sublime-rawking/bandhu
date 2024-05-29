@@ -61,14 +61,14 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Column(children: [
               selectedPdf.isEmpty && ref.read(userDataProvider).dcp.isEmpty
                   ? InkWell(
                       onTap: pickPDF, child: emptyPdfPlaceHolder(size: size))
                   : SizedBox(
                       width: size.width,
-                      height: size.height - 300,
+                      height: size.height - 350,
                       child: selectedPdf.isEmpty
                           ? SfPdfViewer.network(
                               "$baseUrl/uploads/dcp/${ref.read(userDataProvider).dcp}")
@@ -146,7 +146,7 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
 }
 
 Widget emptyPdfPlaceHolder({required Size size}) => Container(
-      height: size.height - 300,
+      height: size.height - 350,
       width: size.width,
       decoration: BoxDecoration(
           color: Colors

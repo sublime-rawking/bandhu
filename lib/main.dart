@@ -25,6 +25,7 @@ void main() {
       child: MaterialApp(
         title: 'Reffergenix',
         theme: ThemeData(
+          useMaterial3: false,
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             elevation: 0,
