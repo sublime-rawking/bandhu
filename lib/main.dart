@@ -23,6 +23,7 @@ void main() {
   runApp(
     ProviderScope(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Reffergenix',
         theme: ThemeData(
           useMaterial3: false,

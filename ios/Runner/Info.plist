@@ -5,11 +5,14 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
-    	<string>We needs permission to upload and save attachments</string>
+    	<string>e need this photo library permission to select, upload and save attachments</string>
     		<key>NSPhotoLibraryUsageDescription</key>
-            	<string>We needs permission to upload and save attachments</string>
+            	<string>We need this photo library permission to select, upload and save attachments</string>
+            		<key>NSCameraUsageDescription</key>
+                            	<string>We need this camera permission to capture images for profile photos</string>
+
 	<key>CFBundleDisplayName</key>
-	<string>reffergenix</string>
+	<string>Reffergenix</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
