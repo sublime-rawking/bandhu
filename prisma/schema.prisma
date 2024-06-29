@@ -8,69 +8,45 @@ datasource db {
 }
 
 model give_ask {
-  give_ask_id Int      @id @default(autoincrement())
-  member_id   Int
-  date        DateTime @db.Date
-  given       String   @db.VarChar(255)
-  ask         String   @db.VarChar(255)
-  remark      String   @db.VarChar(255)
-}
-
-model groups {
-  id           Int            @id @default(autoincrement()) @db.UnsignedMediumInt
-  name         String         @db.VarChar(20)
-  description  String         @db.VarChar(100)
-  users_groups users_groups[]
-}
-
-model login_attempts {
-  id         Int    @id @default(autoincrement()) @db.UnsignedInt
-  ip_address String @db.VarChar(45)
-  login      String @db.VarChar(100)
-  time       Int?   @db.UnsignedInt
+  id            Int      @id @unique @default(autoincrement())
+  date          DateTime @db.DateTime
+  given         String   @db.Text
+  ask           String   @db.Text
+  remark        String   @db.Text
+  status        Int      @default(1)
+  member_id     Int
+  memberDetail members? @relation(fields: [member_id], references: [id])
 }
 
 model members {
-  member_id Int    @id @default(autoincrement())
-  Name      String @db.VarChar(255)
-  Mobile    BigInt
-  Profile   Bytes  @db.Blob
-  DCP       Bytes  @db.VarBinary(255)
-  email     String @db.VarChar(50)
-  password  String @db.VarChar(50)
-  otp       Int?
-  status    Int    @default(1)
+  id            Int        @id @unique @default(autoincrement())
+  name          String     @db.VarChar(150)
+  mobile        String     @db.VarChar(20)
+  profile_image String?    @db.Text
+  dcp           String?    @db.Text
+  email         String     @db.VarChar(50)
+  password      String     @db.VarChar(50)
+  otp           String?    @db.Text
+  status        Int        @default(1)
+  addby         String     @default("") @db.Text
+  otp_validity  DateTime?  @db.DateTime
+  created_at    DateTime   @default(now()) @db.DateTime
+  updated_at    DateTime   @default(now()) @updatedAt @db.DateTime
+  give_ask      give_ask[]
+
+  @@index([mobile], map: "mobile")
 }
 
 model users {
-  id                      Int            @id @default(autoincrement()) @db.UnsignedInt
-  ip_address              String         @db.VarChar(45)
-  username                String?        @db.VarChar(100)
-  password                String         @db.VarChar(255)
-  salt                    String?        @db.VarChar(255)
-  email                   String         @db.VarChar(254)
-  activation_code         String?        @db.VarChar(40)
-  forgotten_password_code String?        @db.VarChar(40)
-  forgotten_password_time Int?           @db.UnsignedInt
-  remember_code           String?        @db.VarChar(40)
-  created_on              Int            @db.UnsignedInt
-  last_login              Int?           @db.UnsignedInt
-  active                  Boolean?
-  first_name              String?        @db.VarChar(50)
-  last_name               String?        @db.VarChar(50)
-  company                 String?        @db.VarChar(100)
-  phone                   String?        @db.VarChar(20)
-  users_groups            users_groups[]
-}
+  id         Int       @id @default(autoincrement())
+  username   String    @db.VarChar(100)
+  password   String    @db.VarChar(255)
+  email      String    @db.VarChar(255)
+  last_login DateTime? @db.DateTime
+  status     Int       @default(1) @db.Int
+  created_at DateTime  @default(now()) @db.DateTime
+  updated_at DateTime  @default(now()) @updatedAt @db.DateTime
 
-model users_groups {
-  id       Int    @id @default(autoincrement()) @db.UnsignedInt
-  user_id  Int    @db.UnsignedInt
-  group_id Int    @db.UnsignedMediumInt
-  groups   groups @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_users_groups_groups1")
-  users    users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_users_groups_users1")
-
-  @@unique([user_id, group_id], map: "uc_users_groups")
-  @@index([group_id], map: "fk_users_groups_groups1_idx")
-  @@index([user_id], map: "fk_users_groups_users1_idx")
+  @@index([username], map: "username")
+  @@index([email], map: "email")
 }
