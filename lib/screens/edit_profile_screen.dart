@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
+import 'package:bandhu/provider/auth_services.dart';
 import 'package:bandhu/provider/image_provider.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
@@ -109,14 +110,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
 
     // get all the fields in Map Object
-    Map<String, String> userData = {
-      "id": ref.read(userDataProvider).userid,
+    Map<String, dynamic> userData = {
+      "id": ref.read(AuthServices.instance.userDataProvider).id,
       "Name": fullNameController.text
     };
     if (ref.read(userDataProvider).email != emailController.text) {
       userData["email"] = emailController.text.toLowerCase();
     }
-    if (ref.read(userDataProvider).phone != phoneNumberController.text) {
+    if (ref.read(userDataProvider).mobile != phoneNumberController.text) {
       userData["Mobile"] = phoneNumberController.text;
     }
 
@@ -125,7 +126,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
 
     try {
-      await Auth()
+      await Auth.instance
           .updateUser(userData: userData, ref: ref, context: context)
           .then((value) {
         if (!value) {
@@ -155,9 +156,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   getUserData() async {
-    emailController.text = ref.read(userDataProvider).email;
-    fullNameController.text = ref.read(userDataProvider).name;
-    phoneNumberController.text = ref.read(userDataProvider).phone;
+    emailController.text = ref.read(AuthServices.instance.userDataProvider).email.toString().toLowerCase();
+    fullNameController.text = ref.read(AuthServices.instance.userDataProvider).name.toString().toLowerCase();
+    phoneNumberController.text = ref.read(AuthServices.instance.userDataProvider).mobile.toString().toLowerCase();
   }
 
   @override
@@ -230,7 +231,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 radius: 60,
                                 backgroundColor: Colors.transparent,
                                 foregroundImage: NetworkImage(
-                                    "$baseUrl/${ref.read(userDataProvider).image}"),
+                                    "$baseUrl/${ref.read(userDataProvider).profileImage}"),
                               ),
                       )),
                   const SizedBox(height: 60),

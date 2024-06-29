@@ -1,168 +1,54 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
+import 'package:bandhu/constant/api_urls.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/main.dart';
+import 'package:bandhu/model/api_response.dart';
+import 'package:bandhu/model/request_model.dart';
 import 'package:bandhu/model/user_model.dart';
+import 'package:bandhu/provider/api_service.dart';
+import 'package:bandhu/provider/auth_services.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:bandhu/utils/log.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../constant/strings.dart';
 
 class Auth {
-  final dio = Dio();
+  static Auth? _instance;
 
-  /// Fetches user data from the API.
-  ///
-  /// Returns `true` if the data is fetched successfully, `false` otherwise.
-  /// Throws an exception and displays an error message if something goes wrong.
-  Future<bool> getUserData({
-    required WidgetRef ref,
-    required BuildContext context,
-  }) async {
-    try {
-      // Make API request to get user data
-      var response = await dio.get(
-        "$baseUrl/Api/getMembersbyID",
-        queryParameters: {"id": ref.read(userDataProvider).userid},
-      );
+  Auth._();
 
-      var databody = jsonDecode(response.data);
+  static Auth get instance => _instance ??= Auth._();
 
-      if (databody["MembersbyID"]["status"].toString() == "2") {
-        // Log out the user if their account is disabled
-        logOut(context: context, ref: ref);
-
-        Fluttertoast.showToast(
-          msg: "User Disabled by Administrator",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: colorPrimary,
-          textColor: white,
-        );
-
-        return false;
-      }
-
-      if (databody["success"] == true) {
-        // Save user data to SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("user", jsonEncode(databody["MembersbyID"]));
-
-        // Update user data in the app state
-        ref.watch(userDataProvider.notifier).state =
-            User.fromMap(databody["MembersbyID"]);
-        write(databody["MembersbyID"].toString());
-        return true;
-      } else {
-        Fluttertoast.showToast(
-          msg: databody["status"],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: colorPrimary,
-          textColor: white,
-        );
-
-        return false;
-      }
-    } catch (e) {
-      write(e.toString());
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
-      return false;
-    }
-  }
-
-  /// Sign up function that sends a POST request to the specified API endpoint
-  /// with the provided user data.
-  ///
-  /// Parameters:
-  /// - userData: A map containing the user data.
-  /// - ref: The widget reference.
-  /// - context: The build context.
-  ///
-  /// Returns:
-  /// - A boolean indicating whether the sign up was successful or not.
   Future signUp({
     required Map<String, String> userData,
     required WidgetRef ref,
     required BuildContext context,
   }) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      // Create a multipart request for the sign up endpoint
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse("$baseUrl/Api/signup"),
-      );
-
-      // Add all the user data fields to the request
-      request.fields.addAll(userData);
-
-      // If a profile picture is provided, add it to the request
-      if (userData["Profile"].toString() != "") {
-        request.files.add(await http.MultipartFile.fromPath(
-          'Profile',
-          userData["Profile"].toString(),
-        ));
-      }
-
-      // Send the request and get the response
-      http.Response response =
-          await http.Response.fromStream(await request.send());
-
-      // Decode the response body
-      var databody = jsonDecode(response.body);
-
-      // Write the response body to the console
-      write(databody.toString());
-
-      // If the sign up was successful, save the user data to shared preferences
-      if (databody["success"] == true) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("user", jsonEncode(databody["data"]));
-
-        // Update the user data in the widget reference
-        ref.watch(userDataProvider.notifier).state =
-            User.fromMap(databody["data"]);
-
-        // Get additional user data
-        await getUserData(ref: ref, context: context);
-
+      BaseRequest request =
+          BaseRequest(url: ApiUrls.authUrl, data: userData, files: [
+        {"profilePic": userData["Profile"]}
+      ]);
+      apiResponse =
+          await ApiServices.instance.postMultiFormRequestData(request);
+      if (apiResponse.isSuccess) {
+        User user = User.fromJson(apiResponse.data);
+        await AuthServices.instance.setToken(user, ref);
         return true;
       } else {
-        // Show an error toast message if sign up failed
-        Fluttertoast.showToast(
-          msg: databody["message"],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: colorPrimary,
-          textColor: white,
-        );
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
         return false;
       }
     } catch (e) {
-      // Show a generic error toast message if an exception occurred
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
     }
   }
 
@@ -174,61 +60,22 @@ class Auth {
     required WidgetRef ref,
     required BuildContext context,
   }) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      // Make a GET request to the login endpoint with the authentication data
-      var res = await dio.get("$baseUrl/Api/login", queryParameters: authData);
-      var databody = jsonDecode(res.data);
-      write(databody.toString());
-
-      if (databody["success"] == true) {
-        if (databody["login"]["status"].toString() == "2") {
-          // Log out the user if their status is 2 (disabled)
-          logOut(context: context, ref: ref);
-
-          // Show a toast message to inform the user
-          Fluttertoast.showToast(
-            msg: "User Disabled by Administrator",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: colorPrimary,
-            textColor: white,
-          );
-          return false;
-        }
-
-        // Save the user data to SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("user", jsonEncode(databody["login"]));
-
-        // Update the user data in the app state
-        ref.watch(userDataProvider.notifier).state =
-            User.fromMap(databody["login"]);
-
+      BaseRequest request = BaseRequest(url: ApiUrls.authUrl, params: authData);
+      apiResponse = await ApiServices.instance.getRequestData(request);
+      if (apiResponse.isSuccess) {
+        User user = User.fromJson(apiResponse.data);
+        await AuthServices.instance.setToken(user, ref);
         return true;
       } else {
-        // Show a toast message with the error status
-        Fluttertoast.showToast(
-          msg: databody["status"],
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: colorPrimary,
-          textColor: white,
-        );
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
         return false;
       }
     } catch (e) {
-      // Handle any exceptions that occur and show a generic error message
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
       return false;
     }
   }
@@ -242,50 +89,27 @@ class Auth {
   /// Returns:
   /// - A `Future` that completes with a boolean indicating the success of the upload.
   Future uploadPDF({required String filePath, required WidgetRef ref}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      // Create a multipart request with the POST method
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse("$baseUrl/Api/updatepdf"),
-      );
-
-      // Add the PDF file to the request
-      request.files.add(await http.MultipartFile.fromPath(
-        'DCP',
-        filePath,
-      ));
-
-      // Add the user ID to the request fields
-      request.fields.addAll({"id": ref.read(userDataProvider).userid});
-
-      // Send the request and get the response
-      http.Response response =
-          await http.Response.fromStream(await request.send());
-
-      // Decode the response body
-      var databody = jsonDecode(response.body);
-      print(response);
-      // Write the response body to the console
-      write(databody.toString());
-
-      // Return the value of the "success" field from the response body
-      return databody["success"];
+      BaseRequest request = BaseRequest(url: ApiUrls.updatePdf, data: {
+        "id": ref.read(AuthServices.instance.userDataProvider).id
+      }, files: [
+        {"DCP": filePath}
+      ]);
+      apiResponse =
+          await ApiServices.instance.postMultiFormRequestData(request);
+      if (apiResponse.isSuccess) {
+        User user = User.fromJson(apiResponse.data);
+        await AuthServices.instance.setToken(user, ref);
+        return true;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return false;
+      }
     } catch (e) {
-      print(e);
-      // Write the error message to the console
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
-
-      // Show a toast message indicating that something went wrong
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
-
-      // Return false to indicate failure
       return false;
     }
   }
@@ -293,44 +117,25 @@ class Auth {
   /// Sends a password reset request for the given [email].
   ///
   /// Returns `true` if the request was successful, otherwise `false`.
-  Future<bool> forgetPassword({required String email}) async {
+  Future<bool> forgetPassword(
+      {required String email, required WidgetRef ref}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      // Create form data with the email
-      var formData = FormData.fromMap({"email_id": email});
-
-      // Send a POST request to the forgot_password API endpoint
-      var res = await dio.post("$baseUrl/Api/forgot_password", data: formData);
-
-      // Parse the response body as JSON
-      var databody = jsonDecode(res.data);
-
-      // Write the response body to a log
-      write(databody.toString());
-      Fluttertoast.showToast(
-        msg: databody["message"],
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
-      // Return the value of the "success" field from the response body
-      return databody["success"];
+      BaseRequest request =
+          BaseRequest(url: ApiUrls.forgotPassword, data: {"email": email});
+      apiResponse = await ApiServices.instance.postRequestData(request);
+      if (apiResponse.isSuccess) {
+        User user = User.fromJson(apiResponse.data);
+        await AuthServices.instance.setToken(user, ref);
+        return true;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return false;
+      }
     } catch (e) {
-      // Write the error to a log
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
-
-      // Show a toast message indicating an error occurred
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
-
-      // Return false to indicate the request failed
       return false;
     }
   }
@@ -341,83 +146,55 @@ class Auth {
   Future verifyOTP(
       {required String email,
       required String otp,
-      required String password}) async {
+      required String password,
+      required WidgetRef ref}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      var formData =
-          FormData.fromMap({"email": email, "otp": otp, "password": password});
-      var res = await dio.post("$baseUrl/Api/verificationotp", data: formData);
-      var databody = jsonDecode(res.data);
-      write(databody.toString());
-      return databody;
+      BaseRequest request = BaseRequest(
+          url: ApiUrls.verifyOtp,
+          data: {"email": email, "otp": otp, "password": password});
+      apiResponse = await ApiServices.instance.postRequestData(request);
+      if (apiResponse.isSuccess) {
+        User user = User.fromJson(apiResponse.data);
+        await AuthServices.instance.setToken(user, ref);
+        return true;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return false;
+      }
     } catch (e) {
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
       return false;
     }
   }
 
   Future updateUser({
-    required Map<String, String> userData,
+    required Map<String, dynamic> userData,
     required WidgetRef ref,
     required BuildContext context,
   }) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse("$baseUrl/Api/updateuser"),
-      );
-
-      // Add all the user data fields to the request
-      request.fields.addAll(userData);
-      // If a profile picture is provided, add it to the request
-      if (userData["Profile"] != null) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'Profile',
-          userData["Profile"].toString(),
-        ));
-      }
-
-      // Send the request and get the response
-      http.Response response =
-          await http.Response.fromStream(await request.send());
-
-      // Write the response body to the console
-
-      // If the sign up was successful, save the user data to shared preferences
-      if (response.statusCode == 200 && response.body.isEmpty) {
-        // Get additional user data
-        await getUserData(ref: ref, context: context);
-
+      BaseRequest request =
+          BaseRequest(url: ApiUrls.updateUser, data: userData, files: [
+        {"profilePic": userData["Profile"]}
+      ]);
+      apiResponse =
+          await ApiServices.instance.postMultiFormRequestData(request);
+      if (apiResponse.isSuccess) {
+        User user = User.fromJson(apiResponse.data);
+        await AuthServices.instance.setToken(user, ref);
         return true;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return false;
       }
-      // Show an error toast message if sign up failed
-      Fluttertoast.showToast(
-        msg: jsonDecode(response.body)["message"],
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
-      return false;
     } catch (e) {
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
-      return false;
     }
   }
 
@@ -428,26 +205,19 @@ class Auth {
   /// - `ref`: The widget reference.
   Future logOut({required BuildContext context, required WidgetRef ref}) async {
     try {
-      await SharedPreferences.getInstance().then((prefs) {
-        prefs.clear(); // Clear the shared preferences
-        ref.watch(screenIndexProvider.notifier).state =
-            0; // Reset the screen index
+      bool isSucces = await AuthServices.instance.removeToken(ref);
+      if (isSucces) {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (c) => const Main()),
             (route) =>
-                false); // Navigate to the Main screen and remove all previous screens
-      });
+                false); //} Navigate to the Main screen and remove all previous screens
+      }
     } catch (e) {
       write(e.toString()); // Log the error
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      ); // Show a toast message
+      Strings.instance.getToast(msg: "Something went wrong");
     }
   }
+
+  getUserData({required WidgetRef ref, required BuildContext context}) {}
 }

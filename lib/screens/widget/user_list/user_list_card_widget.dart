@@ -22,7 +22,7 @@ class UserListCardWidget extends ConsumerWidget {
                 )));
 
     onPressProfile() => showImageViewer(
-        context, Image.network("$baseUrl/${userData.image}").image,
+        context, Image.network("$baseUrl/${userData.profileImage}").image,
         onViewerDismissed: () {});
     onPressOpenPDF() => Navigator.push(
         context,
@@ -42,7 +42,8 @@ class UserListCardWidget extends ConsumerWidget {
               child: CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.transparent,
-                  foregroundImage: NetworkImage("$baseUrl/${userData.image}")),
+                  foregroundImage:
+                      NetworkImage("$baseUrl/${userData.profileImage}")),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -51,11 +52,11 @@ class UserListCardWidget extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      userData.name,
+                      userData.name.toString(),
                       style: fontMedium14.copyWith(color: Colors.black),
                     ),
                     Text(
-                      userData.phone,
+                      userData.mobile.toString(),
                       style: fontRegular14.copyWith(color: Colors.black),
                     )
                   ]),

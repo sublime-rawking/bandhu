@@ -56,12 +56,12 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
   refresh() async {
     ref.watch(loader.notifier).state = true;
     ref.watch(userListViewDataProvider.notifier).state = await AskGive().getAskGive(
-        id: widget.userdata.userid,
+        id: widget.userdata.id.toString(),
         month:
             "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
     ref.watch(gridViewDataProvider.notifier).state = await AskGive()
         .getAskGiveByMonth(
-            id: widget.userdata.userid,
+            id: widget.userdata.id.toString(),
             month:
                 "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
     ref.watch(loader.notifier).state = false;

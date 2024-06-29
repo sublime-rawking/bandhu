@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   riverpod: ^2.4.5
   flutter_riverpod: ^2.4.5
+
+
   google_fonts: ^6.1.0
   flutter_svg: ^2.0.8
   fluttertoast: ^8.2.2
@@ -59,6 +61,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   easy_image_viewer: ^1.2.1
   page_animation_transition: ^1.0.0
+  internet_connection_checker:
  
 
 dev_dependencies:

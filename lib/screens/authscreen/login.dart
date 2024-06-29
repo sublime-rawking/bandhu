@@ -55,8 +55,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     ref.watch(loaderProvider.notifier).state = true;
-    await Auth().signIn(authData: {
-      "credential": phoneNumberController.text.trim(),
+    await Auth.instance.signIn(authData: {
+      "mobileNo": phoneNumberController.text.trim(),
       "password": passwordController.text.trim()
     }, ref: ref, context: context).then((value) {
       if (value) {

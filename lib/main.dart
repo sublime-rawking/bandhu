@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/model/user_model.dart';
+import 'package:bandhu/provider/auth_services.dart';
 import 'package:bandhu/screens/authscreen/login.dart';
 import 'package:bandhu/screens/navbar/navbar.dart';
 import 'package:flutter/material.dart';
@@ -53,18 +54,10 @@ class Main extends ConsumerStatefulWidget {
 
 class _MainState extends ConsumerState<Main> {
   double loader = 0;
-  final userLoaded = StateProvider<bool>((ref) => false);
 
   /// Calls the initialization state.
   callInitState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("user") != null) {
-      Map<String, dynamic> userData =
-          jsonDecode(prefs.getString("user").toString());
-      ref.watch(userDataProvider.notifier).state = User.fromMap(userData);
-      ref.watch(userLoaded.notifier).state = true;
-      Auth().getUserData(ref: ref, context: context);
-    }
+    await AuthServices.instance.initServices(ref);
     FlutterNativeSplash.remove();
     setState(() {
       loader = 1.0;
@@ -82,7 +75,7 @@ class _MainState extends ConsumerState<Main> {
     return AnimatedOpacity(
         duration: const Duration(seconds: 1),
         opacity: loader,
-        child: ref.read(userLoaded)
+        child: ref.read(AuthServices.instance.isAuth)
             ? const Navbar() // Show the Navbar if userLoaded is true
             : const LoginScreen() // Show the LoginScreen if userLoaded is false
         );

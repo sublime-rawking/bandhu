@@ -140,16 +140,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
     // get all the fields in Map Object
     Map<String, String> userData = {
-      "Name": fullNameController.text,
+      "name": fullNameController.text,
       "email": emailController.text.toLowerCase(),
-      "Mobile": phoneNumberController.text,
+      "mobile": phoneNumberController.text,
       "password": passwordController.text,
-      "Profile": ref.watch(_selectedImageProvider).toString() != ""
+      "profile_image": ref.watch(_selectedImageProvider).toString() != ""
           ? ref.watch(_selectedImageProvider).toString()
           : "",
     };
     try {
-      await Auth().signUp(userData: userData, ref: ref, context: context).then(
+      await Auth.instance.signUp(userData: userData, ref: ref, context: context).then(
           (value) => value
               ? Navigator.pushAndRemoveUntil(
                   context,

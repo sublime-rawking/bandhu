@@ -1,4 +1,5 @@
 import 'package:bandhu/api/auth_api.dart';
+import 'package:bandhu/provider/auth_services.dart';
 import 'package:bandhu/theme/fonts.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:bandhu/utils/reset_password_dialog.dart';
@@ -62,7 +63,7 @@ class _SendForgetPasswordRequestState
       return;
     }
 
-    await Auth().forgetPassword(email: emailController.text).then((res) {
+    await Auth.instance.forgetPassword(email: emailController.text, ref: ref).then((res) {
       ref.watch(loader.notifier).state = false;
       if (!res) {
         return;
@@ -219,11 +220,11 @@ class _ResetPasswordState extends ConsumerState<ResetPassword> {
       return;
     }
 
-    await Auth()
+    await Auth.instance
         .verifyOTP(
             email: widget.email,
             otp: otpContollerProvider.text,
-            password: passwordController.text)
+            password: passwordController.text, ref: ref)
         .then((value) {
       if (!value["success"]) {
         showDialog(

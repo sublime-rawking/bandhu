@@ -1,40 +1,44 @@
 class User {
-  String email;
-  String name;
-  String phone;
-  String image;
-  String userid;
-  int? askGiveCount;
-  String dcp;
+  int? id;
+  String? name;
+  String? email;
+  String? mobile;
+  String? profileImage;
+  String? dcp;
+  int? giveAsk;
+  String? token;
 
   User(
-      {required this.email,
-      required this.name,
-      required this.userid,
-      required this.image,
-      this.dcp = "",
-      this.askGiveCount = 0,
-      required this.phone});
+      {this.id,
+      this.name,
+      this.email,
+      this.mobile,
+      this.profileImage,
+      this.dcp,
+      this.giveAsk,
+      this.token});
 
-  User.fromMap(Map<String, dynamic> map)
-      : email = map['email'].toString(),
-        name = map['Name'].toString(),
-        dcp = map['DCP'].toString(),
-        askGiveCount = map["give_ask_count"] != null
-            ? map["give_ask_count"].runtimeType == String
-                ? int.parse(map["give_ask_count"])
-                : map["give_ask_count"].toInt()
-            : 0,
-        phone = map['Mobile'].toString(),
-        userid = map['user_id'].toString(),
-        image = map['Profile'].toString();
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    email = json['email'];
+    mobile = json['mobile'];
+    profileImage = json['profile_image'];
+    dcp = json['dcp'];
+    giveAsk = json['give_ask'];
+    token = json['token'];
+  }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'email': email,
-      'Name': name,
-      'Mobile': phone,
-      'Profile': image,
-    };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['email'] = this.email;
+    data['mobile'] = this.mobile;
+    data['profile_image'] = this.profileImage;
+    data['dcp'] = this.dcp;
+    data['give_ask'] = this.giveAsk;
+    data['token'] = this.token;
+    return data;
   }
 }

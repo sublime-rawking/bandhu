@@ -1,3 +1,4 @@
+import 'package:bandhu/provider/auth_services.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:bandhu/api/auth_api.dart';
 import 'package:bandhu/constant/variables.dart';
@@ -16,7 +17,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  onPressLogout() async => await Auth().logOut(context: context, ref: ref);
+  onPressLogout() async => await Auth.instance.logOut(context: context, ref: ref);
   onPressEditProfile() async => Navigator.push(
       context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
 
@@ -24,15 +25,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   onPressForgetPassword() => openSendForgetPassword(
       context: context,
       title: "Change Password",
-      email: ref.read(userDataProvider).email);
+      email: ref.read(AuthServices.instance.userDataProvider).email.toString());
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(AuthServices.instance.userDataProvider);
 
     onPressProfile() => showImageViewer(
-        context, Image.network("$baseUrl/${userData.image}").image,
+        context, Image.network("$baseUrl/${userData.profileImage}").image,
         onViewerDismissed: () {});
 
     return Container(
@@ -45,7 +46,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: Colors.transparent,
         body: RefreshIndicator(
           onRefresh: () async {
-            await Auth().getUserData(ref: ref, context: context);
+           // await Auth.instance.getUserData(ref: ref, context: context);
           },
           child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -76,7 +77,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           radius: 60,
                           backgroundColor: Colors.transparent,
                           foregroundImage:
-                              NetworkImage("$baseUrl/${userData.image}"),
+                              NetworkImage("$baseUrl/${userData.profileImage}"),
                         ),
                       ),
                     ),
@@ -85,7 +86,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Center(
                       child: Text(
-                        userData.name,
+                        userData.name.toString(),
                         style: fontSemiBold16,
                         textAlign: TextAlign.center,
                       ),
@@ -109,7 +110,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 height: 10,
                               ),
                               Text(
-                                userData.askGiveCount.toString(),
+                                userData.giveAsk.toString(),
                                 style: fontMedium16,
                                 textAlign: TextAlign.center,
                               )
@@ -135,7 +136,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 height: 10,
                               ),
                               Text(
-                                userData.dcp.isNotEmpty ? "Yes" : "No",
+                               (userData.dcp != null && userData.dcp!.isNotEmpty )? "Yes" : "No",
                                 style: fontMedium16,
                                 textAlign: TextAlign.center,
                               )
@@ -149,11 +150,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     height: 40,
                   ),
                   Text(
-                    "User Id.: ${userData.userid}",
+                    "User Id.: ${userData.id}",
                     style: fontSemiBold14,
                   ),
                   Text(
-                    "Mobile No.: ${userData.phone}",
+                    "Mobile No.: ${userData.mobile}",
                     style: fontSemiBold14,
                   ),
                   Text(

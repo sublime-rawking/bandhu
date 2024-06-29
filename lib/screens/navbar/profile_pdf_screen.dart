@@ -39,9 +39,9 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
   }
 
   uploadPDF() async {
-    var res = await Auth().uploadPDF(filePath: selectedPdf, ref: ref);
+    var res = await Auth.instance.uploadPDF(filePath: selectedPdf, ref: ref);
     if (res) {
-      await Auth().getUserData(ref: ref, context: context);
+      // await Auth.instance.getUserData(ref: ref, context: context);
       write(ref.read(userDataProvider).toString());
     }
     setState(() => selectedPdf = "");
@@ -63,7 +63,7 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Column(children: [
-              selectedPdf.isEmpty && ref.read(userDataProvider).dcp.isEmpty
+              selectedPdf.isEmpty &&(ref.read(userDataProvider).dcp == null || ref.read(userDataProvider).dcp!.isEmpty)
                   ? InkWell(
                       onTap: pickPDF, child: emptyPdfPlaceHolder(size: size))
                   : SizedBox(
@@ -88,7 +88,7 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
         child: selectedPdf.isEmpty
             ? ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ref.read(userDataProvider).dcp.isEmpty
+                  backgroundColor:(ref.read(userDataProvider).dcp == null || ref.read(userDataProvider).dcp!.isEmpty)
                       ? Colors.grey.shade400
                       : colorPrimary,
                   elevation: 2,
@@ -99,7 +99,7 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
                 ),
                 onPressed: pickPDF,
                 child: Text(
-                  ref.read(userDataProvider).dcp.isEmpty
+                (ref.read(userDataProvider).dcp == null || ref.read(userDataProvider).dcp!.isEmpty)
                       ? 'Select PDF'
                       : 'Select new PDF',
                   style: fontSemiBold16.copyWith(color: Colors.white),

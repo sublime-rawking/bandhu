@@ -15,7 +15,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    onPressLogOut() async => await Auth().logOut(context: context, ref: ref);
+    onPressLogOut() async => await Auth.instance.logOut(context: context, ref: ref);
     double width = MediaQuery.of(context).size.width;
 
     AsyncValue<List<dynamic>> listViewData = ref.watch(listViewDataProvider);

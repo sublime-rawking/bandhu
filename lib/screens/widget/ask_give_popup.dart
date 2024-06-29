@@ -51,14 +51,14 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
       return;
     }
     Map<String, dynamic> askGiveData = {
-      "member_id": ref.read(userDataProvider).userid,
+      "member_id": ref.read(userDataProvider).id,
       "date": "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}",
       "ask": _askController.text,
       "given": _giveController.text,
       "remark": _remarkController.text,
     };
     await AskGive().addAskGive(askGiveData: askGiveData).then((value) async {
-      await Auth().getUserData(ref: ref, context: context);
+      await Auth.instance.getUserData(ref: ref, context: context);
       // ignore: unused_result
       ref.refresh(listViewDataProvider);
       // ignore: unused_result

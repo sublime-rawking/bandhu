@@ -75,7 +75,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                           itemBuilder: (_, index) => Column(
                             children: [
                               UserListCardWidget(
-                                userData: User.fromMap(data[index]),
+                                userData: User.fromJson(data[index]),
                               ),
                               index != data.length
                                   ? const Divider()
