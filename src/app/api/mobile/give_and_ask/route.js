@@ -3,7 +3,7 @@ import prisma from "@/config/dbConfig";
 import { VerifyToken } from "@/config/jwtConfig";
 import validator from "@/helper/validate";
 import { Promise } from "es6-promise";
-import moment from "moment";
+import moment from "moment/moment";
 
 
 /**
@@ -41,18 +41,14 @@ export const POST = async (request) => {
                 error
             }, { status: 400 });
         }
-
         const giveAndAsk = await prisma.give_ask.create({
             data: {
                 ask: bodyData.ask,
-                date: moment("YYYY-MM-DD").format(bodyData.date),
+                date: moment(bodyData.date),
                 given: bodyData.given,
                 remark: bodyData.remark,
                 member_id: token.data.id
-            }
-            , include: {
-                memberDetail: true
-            }
+            },
         });
 
 
@@ -74,3 +70,60 @@ export const POST = async (request) => {
 }
 
 
+
+
+export const GET = async (request) => {
+    try {
+
+        const token = await VerifyToken();
+        if (!token.success) {
+            return Response.json(token, { status: 401 });
+        }
+
+
+        const searchParams = new URL(request.url).searchParams;
+        const id = searchParams.get('id');
+        let giveAndAsk = []
+        if (searchParams.get("date")) {
+            giveAndAsk = await prisma.give_ask.findMany({
+                where: {
+                    member_id: id ? Number(id) : token.data.id,
+                    date: {
+                        gte: moment(searchParams.get("date"), "YYYY-MM").startOf('month').toDate(),
+                        lte: moment(searchParams.get("date"), "YYYY-MM").endOf('month').toDate(),
+                    }
+                },
+                orderBy: {
+                    date: 'asc'
+                }
+            });
+
+        } else {
+            giveAndAsk = await prisma.give_ask.findMany({
+                where: {
+                    member_id: id ? Number(id) : token.data.id
+                },
+                orderBy: {
+                    date: 'asc'
+                }
+
+            });
+        }
+
+        return Response.json({
+            success: true,
+            message: "give and ask successfully",
+            data: giveAndAsk,
+        }, { status: 200 });
+
+
+    } catch (error) {
+        console.error(error);
+        return Response.json({
+            success: false,
+            message: error.message,
+            error: error,
+            data: {},
+        })
+    }
+} 

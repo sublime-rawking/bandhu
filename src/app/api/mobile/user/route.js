@@ -21,15 +21,20 @@ export async function GET() {
             where: {
                 id: token.data.id,
             },
-            include: {
-                give_ask: true
-            }
+
         });
 
         if (!user) {
             return Response.json({ success: false, message: "User not found", data: {} });
         }
 
+        const give_ask = await prisma.give_ask.findMany({
+            where: {
+                member_id: user.id
+            }
+        });
+
+        user.give_ask = give_ask
 
         return Response.json({
             success: true,
