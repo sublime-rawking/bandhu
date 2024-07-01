@@ -17,7 +17,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  onPressLogout() async => await Auth.instance.logOut(context: context, ref: ref);
+  onPressLogout() async =>
+      await Auth.instance.logOut(context: context, ref: ref);
   onPressEditProfile() async => Navigator.push(
       context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
 
@@ -33,8 +34,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final userData = ref.watch(AuthServices.instance.userDataProvider);
 
     onPressProfile() => showImageViewer(
-        context, Image.network("$baseUrl/${userData.profileImage}").image,
-        onViewerDismissed: () {});
+            context, Image.network("$baseUrl}/${userData.profileImage}").image,
+            onViewerDismissed: () {
+          print(userData.profileImage);
+        });
 
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -46,7 +49,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: Colors.transparent,
         body: RefreshIndicator(
           onRefresh: () async {
-           // await Auth.instance.getUserData(ref: ref, context: context);
+            // await Auth.instance.getUserData(ref: ref, context: context);
           },
           child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -72,13 +75,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ],
                       ),
                       child: InkWell(
-                        onTap: onPressProfile,
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.transparent,
-                          foregroundImage:
-                              NetworkImage("$baseUrl/${userData.profileImage}"),
-                        ),
+                        onTap: (userData.profileImage != null &&
+                                userData.profileImage!.isNotEmpty)
+                            ? onPressProfile
+                            : null,
+                        child: SizedBox(
+                          width: 120,
+                          height: 120,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(60),
+                            child: Image.network("$baseUrl/${userData.profileImage}",
+                            loadingBuilder: (context, child, loadingProgress) {
+                              return CircularProgressIndicator();
+                            },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset("assets/images/default.png");
+                              },
+                            ),
+                          ),
+                        )
                       ),
                     ),
                   ),
@@ -136,7 +151,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 height: 10,
                               ),
                               Text(
-                               (userData.dcp != null && userData.dcp!.isNotEmpty )? "Yes" : "No",
+                                (userData.dcp != null &&
+                                        userData.dcp!.isNotEmpty)
+                                    ? "Yes"
+                                    : "No",
                                 style: fontMedium16,
                                 textAlign: TextAlign.center,
                               )

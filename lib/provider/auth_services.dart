@@ -34,6 +34,7 @@ class AuthServices {
         if (ref.watch(userDataProvider).token != null &&
             ref.watch(userDataProvider).token != "") {
           ref.watch(isAuth.notifier).state = true;
+          ApiServices.instance.setToken(ref.watch(userDataProvider).token!);
         }
       }
     }

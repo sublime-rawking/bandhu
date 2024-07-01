@@ -71,8 +71,8 @@ mixin BaseApiClass {
     }
     if (e.response?.statusCode == 401) {
 //      Get.find<AuthService>().removeCurrentUser();
-      return ApiResponse(
-          apiStatus: ApiStatus.error, message: "Invalid Token (401)");
+//       return ApiResponse(
+//           apiStatus: ApiStatus.error, message: );
     }
     if (e.response?.statusCode == 422) {
       return ApiResponse(

@@ -51,7 +51,7 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
       return;
     }
     Map<String, dynamic> askGiveData = {
-      "member_id": ref.read(userDataProvider).id,
+  //    "member_id": ref.read(userDataProvider).id,
       "date": "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}",
       "ask": _askController.text,
       "given": _giveController.text,

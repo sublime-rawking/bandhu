@@ -63,7 +63,7 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
         .getAskGiveByMonth(
             id: widget.userdata.id.toString(),
             month:
-                "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
+                "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}-${ref.read(userSelectedDateTimeProvider).day}");
     ref.watch(loader.notifier).state = false;
   }
 

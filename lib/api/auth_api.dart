@@ -1,20 +1,13 @@
-// ignore_for_file: use_build_context_synchronously
-import 'dart:convert';
 import 'package:bandhu/constant/api_urls.dart';
-import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/main.dart';
 import 'package:bandhu/model/api_response.dart';
 import 'package:bandhu/model/request_model.dart';
 import 'package:bandhu/model/user_model.dart';
 import 'package:bandhu/provider/api_service.dart';
 import 'package:bandhu/provider/auth_services.dart';
-import 'package:bandhu/theme/theme.dart';
 import 'package:bandhu/utils/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../constant/strings.dart';
 
 class Auth {
@@ -206,6 +199,7 @@ class Auth {
   Future logOut({required BuildContext context, required WidgetRef ref}) async {
     try {
       bool isSucces = await AuthServices.instance.removeToken(ref);
+      print(isSucces);
       if (isSucces) {
         Navigator.pushAndRemoveUntil(
             context,
@@ -219,5 +213,26 @@ class Auth {
     }
   }
 
-  getUserData({required WidgetRef ref, required BuildContext context}) {}
+  getUserData({required WidgetRef ref, required BuildContext context}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
+    try {
+      BaseRequest request = BaseRequest(
+        url: ApiUrls.user,
+      );
+      apiResponse = await ApiServices.instance.getRequestData(request);
+      if (apiResponse.isSuccess) {
+        User user = User.fromJson(apiResponse.data);
+        await AuthServices.instance.setToken(user, ref);
+        return true;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return false;
+      }
+    } catch (e) {
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
+      write(e.toString());
+      return false;
+    }
+  }
 }

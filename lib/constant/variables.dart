@@ -37,7 +37,7 @@ final gridViewDataProvider = FutureProvider((ref) async => await AskGive()
         id: ref.watch(userDataProvider).id.toString(),
         // week: ref.watch(selectedWeekProvider),
         month:
-            "${ref.read(selectedDateTimeProvider).year}-${ref.read(selectedDateTimeProvider).month}"));
+            "${ref.read(selectedDateTimeProvider).year}-${ref.read(selectedDateTimeProvider).month}-${ref.read(selectedDateTimeProvider).day}"));
 
 final memberListProvider = FutureProvider((ref) async {
   return await AskGive().getMembers(search: searchController.text);

@@ -1,9 +1,14 @@
 import 'dart:convert';
-import 'package:bandhu/constant/variables.dart';
 import 'package:bandhu/theme/theme.dart';
 import 'package:bandhu/utils/log.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '../constant/api_urls.dart';
+import '../constant/strings.dart';
+import '../model/api_response.dart';
+import '../model/request_model.dart';
+import '../provider/api_service.dart';
 
 class AskGive {
   final dio = Dio();
@@ -29,20 +34,23 @@ class AskGive {
   /// Get AskGive data for a specific month and week.
   Future<List> getAskGiveByMonth(
       {required String id, required String month}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      write("$id $month");
-      var res = await dio.get("$baseUrl/Api/giveaskdata", queryParameters: {
-        "id": id,
-        "date": month,
-      });
-
-      var databody = jsonDecode(res.data.toString());
-      write(databody.toString());
-      if (databody["success"] == true) {
-        return databody["data"];
+      BaseRequest request = BaseRequest(
+        url: ApiUrls.giveAndAsk,
+        params: {"data":month}
+      );
+      apiResponse = await ApiServices.instance.getRequestData(request);
+      write(apiResponse.data.toString());
+      if (apiResponse.isSuccess) {
+        return apiResponse.data;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return [];
       }
-      return [];
     } catch (e) {
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
       return [];
     }
@@ -50,17 +58,22 @@ class AskGive {
 
   /// Get AskGive data for a specific id and month.
   Future<List> getAskGive({required String id, required String month}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      var res = await dio.get("$baseUrl/Api/getGive_ask",
-          queryParameters: {"id": id, "date": month});
-
-      var databody = jsonDecode(res.data.toString());
-      write(databody.toString());
-      if (databody["success"] == true) {
-        return databody["Give_ask"];
+      BaseRequest request = BaseRequest(
+        url: ApiUrls.giveAndAsk,
+      );
+      apiResponse = await ApiServices.instance.getRequestData(request);
+      write(apiResponse.data.toString());
+      if (apiResponse.isSuccess) {
+        return apiResponse.data;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return [];
       }
-      return [];
     } catch (e) {
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
       return [];
     }
@@ -68,42 +81,24 @@ class AskGive {
 
   /// Add AskGive data.
   Future<bool> addAskGive({required Map<String, dynamic> askGiveData}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      var formData = FormData.fromMap(askGiveData);
-      var res = await dio.post("$baseUrl/Api/give_ask", data: formData);
-
-      var databody = jsonDecode(res.data.toString());
-      write(databody.toString());
-      if (databody["success"] == true) {
-        Fluttertoast.showToast(
-          msg: "Added successfully",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: colorPrimary,
-          textColor: white,
-        );
+      BaseRequest request = BaseRequest(
+        url: ApiUrls.giveAndAsk,
+        data: askGiveData,
+      );
+      apiResponse = await ApiServices.instance.postRequestData(request);
+      write(apiResponse.data.toString());
+      if (apiResponse.isSuccess) {
         return true;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return false;
       }
-      Fluttertoast.showToast(
-        msg: databody["status"],
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
-      return false;
     } catch (e) {
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
-      Fluttertoast.showToast(
-        msg: "Something went wrong",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: colorPrimary,
-        textColor: white,
-      );
       return false;
     }
   }
