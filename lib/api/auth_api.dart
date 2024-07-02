@@ -9,6 +9,7 @@ import 'package:bandhu/utils/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constant/strings.dart';
+import '../constant/variables.dart';
 
 class Auth {
   static Auth? _instance;
@@ -222,7 +223,7 @@ class Auth {
       apiResponse = await ApiServices.instance.getRequestData(request);
       if (apiResponse.isSuccess) {
         User user = User.fromJson(apiResponse.data);
-        await AuthServices.instance.setToken(user, ref);
+        ref.watch(AuthServices.instance.userDataProvider.notifier).state = user;
         return true;
       } else {
         Strings.instance.getToast(msg: apiResponse.message ?? "");

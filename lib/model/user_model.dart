@@ -25,7 +25,7 @@ class User {
     mobile = json['mobile'];
     profileImage = json['profile_image'];
     dcp = json['dcp'];
-    giveAsk = json['give_ask'];
+    giveAsk = json['giveAskCount'];
     token = json['token'];
   }
 
@@ -37,7 +37,7 @@ class User {
     data['mobile'] = this.mobile;
     data['profile_image'] = this.profileImage;
     data['dcp'] = this.dcp;
-    data['give_ask'] = this.giveAsk;
+    data['giveAskCount'] = this.giveAsk;
     data['token'] = this.token;
     return data;
   }

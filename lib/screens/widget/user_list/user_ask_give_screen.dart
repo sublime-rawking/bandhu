@@ -55,15 +55,14 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
 
   refresh() async {
     ref.watch(loader.notifier).state = true;
-    ref.watch(userListViewDataProvider.notifier).state = await AskGive().getAskGive(
-        id: widget.userdata.id.toString(),
-        month:
-            "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}");
+    ref.watch(userListViewDataProvider.notifier).state = await AskGive()
+        .getAskGive(
+            id: widget.userdata.id.toString(),
+            month: ref.read(userSelectedDateTimeProvider).toUtc().toString());
     ref.watch(gridViewDataProvider.notifier).state = await AskGive()
         .getAskGiveByMonth(
             id: widget.userdata.id.toString(),
-            month:
-                "${ref.read(userSelectedDateTimeProvider).year}-${ref.read(userSelectedDateTimeProvider).month}-${ref.read(userSelectedDateTimeProvider).day}");
+            month: ref.read(userSelectedDateTimeProvider).toUtc().toString());
     ref.watch(loader.notifier).state = false;
   }
 
@@ -152,10 +151,9 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
                         itemCount: gridCardData.length,
                         itemBuilder: (context, index) => CalendarCard(
                             cardColor: colorAccentCard,
-                            count: gridCardData[index]["task_count"].toString(),
-                            date: DateTime.parse(gridCardData[index]["list"][0]
-                                    ["date"]
-                                .toString())),
+                            count: gridCardData[index]["length"].toString(),
+                            date: DateTime.parse(
+                                gridCardData[index]["date"].toString())),
                       ),
                 ref.watch(loader)
                     ? const Center(child: CircularProgressIndicator())
@@ -164,7 +162,7 @@ class _UserAskGiveScreenState extends ConsumerState<UserAskGiveScreen> {
                         shrinkWrap: true,
                         itemBuilder: (context, index) => ListViewCard(
                               cardData:
-                                  AskGiveModel.fromMap(listCardData[index]),
+                                  AskGiveModel.fromJson(listCardData[index]),
                             ))
               ],
             ),

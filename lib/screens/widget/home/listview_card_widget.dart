@@ -25,26 +25,26 @@ class _ListViewCardState extends ConsumerState<ListViewCard> {
         padding: const EdgeInsets.all(10),
         child: ExpandablePanel(
           header: Text(
-            DateFormat("dd-MM-yyyy").format(widget.cardData.date),
+            DateFormat("dd-MM-yyyy").format(widget.cardData.date!),
             style: fontMedium16.copyWith(color: Colors.black),
           ),
           theme: ExpandableThemeData(
-              hasIcon: widget.cardData.ask.length < 52 &&
-                      widget.cardData.give.length < 52 &&
-                      widget.cardData.remark.length < 45
+              hasIcon: widget.cardData.ask!.length < 52 &&
+                      widget.cardData.given!.length < 52 &&
+                      widget.cardData.remark!.length < 45
                   ? false
                   : true,
               useInkWell: false),
           collapsed: dateFeild(
-              askData: widget.cardData.ask,
-              giveData: widget.cardData.give,
+              askData: widget.cardData.ask!,
+              giveData: widget.cardData.given!,
               isWrap: true,
-              remarkData: widget.cardData.remark),
+              remarkData: widget.cardData.remark!),
           expanded: dateFeild(
-              askData: widget.cardData.ask,
-              giveData: widget.cardData.give,
+              askData: widget.cardData.ask!,
+              giveData: widget.cardData.given!,
               isWrap: false,
-              remarkData: widget.cardData.remark),
+              remarkData: widget.cardData.remark!),
         ),
       ),
     );

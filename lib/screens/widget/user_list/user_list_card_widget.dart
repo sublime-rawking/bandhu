@@ -37,14 +37,21 @@ class UserListCardWidget extends ConsumerWidget {
         onTap: onPressCard,
         child: Row(
           children: [
-            InkWell(
-              onTap: onPressProfile,
-              child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.transparent,
-                  foregroundImage:
-                      NetworkImage("$baseUrl/${userData.profileImage}")),
-            ),
+            (userData.profileImage != null && userData.profileImage!.isNotEmpty)
+                ? InkWell(
+                    onTap: onPressProfile,
+                    child: CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.transparent,
+                        foregroundImage:
+                            NetworkImage("$baseUrl/${userData.profileImage}")))
+                : CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.pinkAccent,
+                    child: Center(
+                      child: Text(userData.name![0].toUpperCase()),
+                    ),
+                  ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(

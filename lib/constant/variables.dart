@@ -4,6 +4,7 @@ import 'package:bandhu/provider/auth_services.dart';
 // ignore: unused_import
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // server endpoint
 // Main Server
@@ -13,8 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const baseUrl = "http://192.168.0.153:3000/api/mobile";
 
 const defaultprofileImage = "assets/images/default.png";
-final StateProvider<User> userDataProvider = StateProvider<User>(
-    (ref) => User());
+final StateProvider<User> userDataProvider =
+    StateProvider<User>((ref) => User());
 
 final screenIndexProvider = StateProvider((ref) => 0);
 final selectedWeekProvider = StateProvider((ref) {
@@ -29,15 +30,15 @@ final TextEditingController searchController = TextEditingController();
 final listViewDataProvider = FutureProvider((ref) async => await AskGive()
     .getAskGive(
         id: ref.read(AuthServices.instance.userDataProvider).id.toString(),
-        month:
-            "${ref.read(selectedDateTimeProvider).year}-${ref.read(selectedDateTimeProvider).month}"));
+        month:  (ref.read(selectedDateTimeProvider)).toUtc().toString(),
+)
+);
 
 final gridViewDataProvider = FutureProvider((ref) async => await AskGive()
     .getAskGiveByMonth(
         id: ref.watch(userDataProvider).id.toString(),
         // week: ref.watch(selectedWeekProvider),
-        month:
-            "${ref.read(selectedDateTimeProvider).year}-${ref.read(selectedDateTimeProvider).month}-${ref.read(selectedDateTimeProvider).day}"));
+    month:  (ref.read(selectedDateTimeProvider)).toUtc().toString(),));
 
 final memberListProvider = FutureProvider((ref) async {
   return await AskGive().getMembers(search: searchController.text);

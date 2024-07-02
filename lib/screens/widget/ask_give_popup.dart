@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
+import '../../utils/loader.dart';
+
 class AskGivePopup extends ConsumerStatefulWidget {
   const AskGivePopup({super.key});
 
@@ -52,16 +54,18 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
     }
     Map<String, dynamic> askGiveData = {
   //    "member_id": ref.read(userDataProvider).id,
-      "date": "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}",
+      "date": (selectedDate).toUtc().toString(),
       "ask": _askController.text,
       "given": _giveController.text,
-      "remark": _remarkController.text,
+      "remark": _remarkController.text
     };
     await AskGive().addAskGive(askGiveData: askGiveData).then((value) async {
+      showDLoadingDialog(context);
       await Auth.instance.getUserData(ref: ref, context: context);
       // ignore: unused_result
       ref.refresh(listViewDataProvider);
       // ignore: unused_result
+      Navigator.pop(context);
       ref.refresh(gridViewDataProvider);
       if (value) {
         Navigator.pop(context);

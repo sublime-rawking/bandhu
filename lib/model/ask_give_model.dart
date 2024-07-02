@@ -1,37 +1,46 @@
 class AskGiveModel {
-  String ask;
-  String give;
-  String remark;
-  DateTime date;
-  int id;
+  int? id;
+  DateTime? date;
+  String? given;
+  String? ask;
+  String? remark;
+  int? status;
+  int? memberId;
 
   AskGiveModel(
-      {required this.ask,
-      required this.give,
-      required this.remark,
-      required this.date,
-      required this.id});
+      {this.id,
+        this.date,
+        this.given,
+        this.ask,
+        this.remark,
+        this.status,
+        this.memberId});
 
-  AskGiveModel.fromMap(Map<String, dynamic> map)
-      : ask = map["ask"].toString(),
-        give = map["given"].toString(),
-        remark = map["remark"].toString(),
-        date = DateTime.parse(map["date"]),
-        id = int.parse(map["give_ask_id"]);
+  AskGiveModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    date = (json['date']!= null && json['date']!.isNotEmpty) ? DateTime.parse(json['date']).toLocal() : null;
+    given = json['given'];
+    ask = json['ask'];
+    remark = json['remark'];
+    status = json['status'];
+    memberId = json['member_id'];
+  }
+
+
+  static List<AskGiveModel> fromJsonList(List? list) {
+    if (list == null) return [];
+    return list.map((item) => AskGiveModel.fromJson(item)).toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['date'] = this.date;
+    data['given'] = this.given;
+    data['ask'] = this.ask;
+    data['remark'] = this.remark;
+    data['status'] = this.status;
+    data['member_id'] = this.memberId;
+    return data;
+  }
 }
-
-// List<String> dateFormats = [
-//   "yyyy-MM-dd",
-//   "MM/dd/yyyy",
-// ];
-
-// DateTime? parseDate(String dateString, List<String> dateFormats) {
-//   for (String format in dateFormats) {
-//     try {
-//       return DateFormat(format).parseStrict(dateString);
-//     } catch (e) {
-//       // Ignore and try the next format
-//     }
-//   }
-//   return null;
-// }

@@ -129,9 +129,9 @@ class HomeScreen extends ConsumerWidget {
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemBuilder: (context, index) => CalendarCard(
                         cardColor: colorAccentCard,
-                        count: data[index]["task_count"].toString(),
+                        count: data[index]["length"].toString(),
                         date: DateTime.parse(
-                            data[index]["list"][0]["date"].toString())),
+                            data[index]["date"].toString()).toLocal()),
                   ),
                 ),
                 listViewData.when(
@@ -149,7 +149,7 @@ class HomeScreen extends ConsumerWidget {
                       physics: const AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) => ListViewCard(
-                        cardData: AskGiveModel.fromMap(data[index]),
+                        cardData: AskGiveModel.fromJson(data[index]),
                       ),
                     ),
                   ),

@@ -15,31 +15,34 @@ class AskGive {
 
   /// Get members based on search query.
   Future<List> getMembers({String search = ""}) async {
+    ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      var res = await dio
-          .get("$baseUrl/Api/getMembers", queryParameters: {"name": search});
-
-      var databody = jsonDecode(res.data.toString());
-      write(databody.toString());
-      if (databody["success"] == true) {
-        return databody["members"];
+      BaseRequest request =
+          BaseRequest(url: ApiUrls.getAllUser, params: {"name": search});
+      apiResponse = await ApiServices.instance.getRequestData(request);
+      write(apiResponse.data.toString());
+      if (apiResponse.isSuccess) {
+        return apiResponse.data;
+      } else {
+        Strings.instance.getToast(msg: apiResponse.message ?? "");
+        return [];
       }
-      return [];
     } catch (e) {
+      Strings.instance
+          .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
       return [];
     }
   }
 
   /// Get AskGive data for a specific month and week.
-  Future<List> getAskGiveByMonth(
-      {required String id, required String month}) async {
+  Future<List> getAskGiveByMonth({String? id, required String month}) async {
     ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      BaseRequest request = BaseRequest(
-        url: ApiUrls.giveAndAsk,
-        params: {"data":month}
-      );
+      BaseRequest request =
+          BaseRequest(url: ApiUrls.calender, params: {
+            if(id!=null && id.toString()!="null") "id": id,
+            "date": month});
       apiResponse = await ApiServices.instance.getRequestData(request);
       write(apiResponse.data.toString());
       if (apiResponse.isSuccess) {
@@ -57,12 +60,13 @@ class AskGive {
   }
 
   /// Get AskGive data for a specific id and month.
-  Future<List> getAskGive({required String id, required String month}) async {
+  Future<List> getAskGive({ String? id, required String month}) async {
     ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
       BaseRequest request = BaseRequest(
-        url: ApiUrls.giveAndAsk,
-      );
+          url: ApiUrls.giveAndAsk, params: {
+        if(id!=null && id.toString()!="null") "id": id,
+        "date": month});
       apiResponse = await ApiServices.instance.getRequestData(request);
       write(apiResponse.data.toString());
       if (apiResponse.isSuccess) {
