@@ -16,12 +16,13 @@ export const GET = async (request) => {
         const id = searchParams.get('id');
         let giveAndAsk = []
         if (searchParams.get("date")) {
+
             giveAndAsk = await prisma.give_ask.findMany({
                 where: {
                     member_id: id ? Number(id) : token.data.id,
                     date: {
-                        gte: moment(searchParams.get("date"), "YYYY-MM").startOf('month').toDate(),
-                        lte: moment(searchParams.get("date"), "YYYY-MM").endOf('month').toDate(),
+                        gte: moment.utc(searchParams.get("date") , "YYYY-MM").startOf('month').toDate(),
+                        lte: moment.utc(searchParams.get("date") , "YYYY-MM").endOf('month').toDate(),
                     }
                 },
                 orderBy: {
@@ -51,7 +52,7 @@ export const GET = async (request) => {
                 acc[date] = { length: 0 };
             }
             acc[date].length++;
-            acc[date].date = date;
+            acc[date].date = moment.utc(item.date);
             return acc;
         }, {});
 

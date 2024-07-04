@@ -43,7 +43,7 @@ export async function POST(request) {
                 username: bodyData.username,
                 password: encryptedPassword,
                 email: bodyData.email,
-                last_login: moment().toDate(),
+                last_login: moment.utc().toDate(),
                 status: 1
             },
             select: {
@@ -67,7 +67,6 @@ export async function POST(request) {
     } catch (error) {
         console.error(error);
 
-        return Response.json({ success: false, message: error.message, data: {}, error }, { status: 500 });
     }
 }
 

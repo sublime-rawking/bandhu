@@ -1,29 +1,34 @@
 "use client";
 import { logo } from "@/assets";
+import { LoginService } from "@/services/AuthServices";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+
+
+
 export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const route = useRouter();
+
+
   const onFormSubmit = async (e) => {
     e.preventDefault();
     console.log("submitted");
-    const res = await fetch(`/api/admin/auth?username=${e.target.username.value}&password=${e.target.password.value}`, {
-      method: "GET",
-    });
-    console.log(await res.json());
+    const res = await LoginService({ email: e.target.username.value, password: e.target.password.value });
+    console.log(res);
     if (res.status === 200) {
-      console.log("success");
-
+      route.push("/dashboard");
       return
     }
-    setError("Invalid username or password")
+    console.log(res.message);
+    setError(res.message)
 
   }
-
-
 
   return (
     <main className="flex flex-col justify-center align-middle
@@ -33,11 +38,10 @@ export default function Home() {
         className="md:w-container p-10 flex flex-col space-y-12 sm:shadow-lg md:w-1/2 lg:w-1/3 xl:w-1/4 rounded-lg"
       >
         <header className="mb-8 text-center space-y-1 w-full">
-          <h1 className="font-semibold text-3xl align-middle flex flex-col justify-center text-center mx-auto ">
+          <h1 className="font-semibold text-3xl bg-gradient-to-r from-[#c45050] to-primary bg-clip-text text-transparent">
             RefferGenix
-            <Image src={logo} priority alt="logo" width={1000} height={1000} className="w-52 h-w-52 shadow-lg rounded-md mx-auto" />
           </h1>
-
+          <Image src={logo} priority alt="logo" width={1000} height={1000} className="w-52 h-w-52 shadow-lg rounded-md mx-auto" />
         </header>
         {/* INPUTS FIELDS */}
         <section id="form-input-fields" className="flex flex-col space-y-6">
@@ -69,6 +73,7 @@ export default function Home() {
                 <FaEye />}
             </button>
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
         </section>
         <footer className=" ml-auto flex justify-end">
           <button

@@ -41,10 +41,12 @@ export const POST = async (request) => {
                 error
             }, { status: 400 });
         }
+
+        const dateTime = moment.utc(bodyData.date).toDate();
         const giveAndAsk = await prisma.give_ask.create({
             data: {
                 ask: bodyData.ask,
-                date: moment(bodyData.date),
+                date: dateTime,
                 given: bodyData.given,
                 remark: bodyData.remark,
                 member_id: token.data.id
@@ -89,8 +91,8 @@ export const GET = async (request) => {
                 where: {
                     member_id: id ? Number(id) : token.data.id,
                     date: {
-                        gte: moment(searchParams.get("date"), "YYYY-MM").startOf('month').toDate(),
-                        lte: moment(searchParams.get("date"), "YYYY-MM").endOf('month').toDate(),
+                        gte: moment.utc(searchParams.get("date"), "YYYY-MM").startOf('month').toDate(),
+                        lte: moment.utc(searchParams.get("date"), "YYYY-MM").endOf('month').toDate(),
                     }
                 },
                 orderBy: {

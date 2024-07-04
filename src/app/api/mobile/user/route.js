@@ -28,13 +28,11 @@ export async function GET() {
             return Response.json({ success: false, message: "User not found", data: {} });
         }
 
-        const give_ask = await prisma.give_ask.findMany({
+        const give_ask = await prisma.give_ask.count({
             where: {
                 member_id: user.id
             }
         });
-
-        user.give_ask = give_ask
 
         return Response.json({
             success: true,
@@ -46,7 +44,7 @@ export async function GET() {
                 profile_image: user.profile_image,
                 id: user.id,
                 dcp: user.dcp,
-                give_ask: user.give_ask
+                giveAskCount: give_ask
             }
         });
     } catch (error) {

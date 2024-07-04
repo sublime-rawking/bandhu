@@ -66,6 +66,7 @@ export async function GET(request) {
 
         const decryptedPassword = decrypt(user.password);
 
+
         if (password !== decryptedPassword) {
             return Response.json({
                 success: false,
@@ -73,6 +74,14 @@ export async function GET(request) {
             }, { status: 401 });
         }
 
+
+        const giveAskCount = await prisma.give_ask.count({
+            where: {
+                member_id: user.id
+            }
+        });
+
+        user.giveAskCount = giveAskCount;
 
         const token = GenerateToken({ id: user.id, email: user.email, name: user.name });
         return Response.json({
