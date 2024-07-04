@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 
 // localHost
 const baseUrl = "http://192.168.0.153:3000/api/mobile";
-
+const siteUrl = "http://192.168.0.153:3000";
 const defaultprofileImage = "assets/images/default.png";
 final StateProvider<User> userDataProvider =
     StateProvider<User>((ref) => User());

@@ -61,7 +61,7 @@ class _AskGivePopupState extends ConsumerState<AskGivePopup> {
     };
     await AskGive().addAskGive(askGiveData: askGiveData).then((value) async {
       showDLoadingDialog(context);
-      await Auth.instance.getUserData(ref: ref, context: context);
+      await Auth.instance.getUserData(ref: ref,);
       // ignore: unused_result
       ref.refresh(listViewDataProvider);
       // ignore: unused_result

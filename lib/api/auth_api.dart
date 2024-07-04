@@ -82,19 +82,16 @@ class Auth {
   ///
   /// Returns:
   /// - A `Future` that completes with a boolean indicating the success of the upload.
-  Future uploadPDF({required String filePath, required WidgetRef ref}) async {
+  Future uploadPDF({required String filePath, required WidgetRef ref, sendProgress, context}) async {
     ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      BaseRequest request = BaseRequest(url: ApiUrls.updatePdf, data: {
-        "id": ref.read(AuthServices.instance.userDataProvider).id
-      }, files: [
-        {"DCP": filePath}
+      BaseRequest request = BaseRequest(url: ApiUrls.updatePdf, files: [
+        {"dcp": filePath}
       ]);
       apiResponse =
-          await ApiServices.instance.postMultiFormRequestData(request);
+          await ApiServices.instance.postMultiFormRequestData(request,sendProgress: sendProgress);
       if (apiResponse.isSuccess) {
-        User user = User.fromJson(apiResponse.data);
-        await AuthServices.instance.setToken(user, ref);
+        await Auth.instance.getUserData(ref: ref, );
         return true;
       } else {
         Strings.instance.getToast(msg: apiResponse.message ?? "");
@@ -214,7 +211,7 @@ class Auth {
     }
   }
 
-  getUserData({required WidgetRef ref, required BuildContext context}) async {
+  getUserData({required WidgetRef ref}) async {
     ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
       BaseRequest request = BaseRequest(
@@ -223,6 +220,7 @@ class Auth {
       apiResponse = await ApiServices.instance.getRequestData(request);
       if (apiResponse.isSuccess) {
         User user = User.fromJson(apiResponse.data);
+        user.token =ApiServices.instance.dioClient.options.headers["x-access-token"];
         ref.watch(AuthServices.instance.userDataProvider.notifier).state = user;
         return true;
       } else {

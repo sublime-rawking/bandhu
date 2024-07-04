@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api/auth_api.dart';
 import '../constant/variables.dart';
 import '../model/user_model.dart';
 
@@ -35,6 +36,7 @@ class AuthServices {
             ref.watch(userDataProvider).token != "") {
           ref.watch(isAuth.notifier).state = true;
           ApiServices.instance.setToken(ref.watch(userDataProvider).token!);
+          await Auth.instance.getUserData(ref: ref,);
         }
       }
     }
