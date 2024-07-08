@@ -28,7 +28,7 @@ model members {
   password      String     @db.VarChar(50)
   otp           String?    @db.Text
   status        Int        @default(1)
-  addby         String     @default("") @db.Text
+  add_by        String     @default("") @db.Text
   otp_validity  DateTime?  @db.DateTime
   created_at    DateTime   @default(now()) @db.DateTime
   updated_at    DateTime   @default(now()) @updatedAt @db.DateTime

@@ -1,7 +1,16 @@
+"use client";
+import Cookies from "js-cookie";
 import Link from "next/link";
 import React from "react";
 
 function Navbar() {
+  const handleLogout = () => {
+    "use client";
+    Cookies.remove("userId");
+    Cookies.remove("token");
+    Cookies.remove("data");
+  };
+
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
@@ -13,10 +22,12 @@ function Navbar() {
         <div className="navbar bg-base-100">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <a>Add User</a>
+              <Link href="/dashboard?user=true">Add User</Link>
             </li>
             <li>
-              <Link href="/">Logout</Link>
+              <Link href="/" onClick={handleLogout}>
+                Logout
+              </Link>
             </li>
           </ul>
         </div>

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 
 
-export function NetworkHook({ url }) {
+export function NetworkHook(config) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    
     useEffect(() => {
         setLoading(true)
-        fetch(url)
+        fetch(config)
             .then(res => res.json())
             .then(data => {
                 setData(data)
@@ -17,7 +18,7 @@ export function NetworkHook({ url }) {
                 setError(err)
                 setLoading(false)
             })
-    }, [url])
+    }, [config])
 
 
     return { data, loading, error }

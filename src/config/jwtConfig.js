@@ -27,7 +27,6 @@ export async function VerifyToken() {
     }
     const _decryptToken = decrypt(token);
     let decodedData = verify(_decryptToken, process.env.JWT_SECRET_KEY || "");
-
     if (typeof decodedData !== "object") {
       decodedData = {};
     }

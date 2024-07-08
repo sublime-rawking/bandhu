@@ -1,6 +1,13 @@
 {
     "cSpell.words": [
+        "autoincrement",
         "chartjs",
-        "reffergenix"
+        "datasource",
+        "flaticons",
+        "reffergenix",
+        "squircle"
+    ],
+    "cSpell.enableFiletypes": [
+        "prisma"
     ]
 }

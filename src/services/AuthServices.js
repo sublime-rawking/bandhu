@@ -11,4 +11,4 @@ export const LoginService = async ({ email, password }) => {
     }
 
     return { status: res.status, message: data.message }
-};'bh'
+};'bh'  
