@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -14,7 +15,7 @@ function UserDetails({ user, modalRef }) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-access-token": sessionStorage.getItem("user"),
+        "x-access-token": Cookies.get("token"),
       },
       body: JSON.stringify({
         id: user.id,

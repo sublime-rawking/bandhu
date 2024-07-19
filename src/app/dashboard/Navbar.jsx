@@ -4,10 +4,21 @@ import Link from "next/link";
 import React from "react";
 
 function Navbar() {
+  /**
+   * Removes the userId, token, and data from the Cookies
+   *
+   * @function
+   * @name handleLogout
+   * @returns {void}
+   */
   const handleLogout = () => {
-    "use client";
+    // Removing the userId from the Cookies
     Cookies.remove("userId");
+
+    // Removing the token from the Cookies
     Cookies.remove("token");
+
+    // Removing the data from the Cookies
     Cookies.remove("data");
   };
 

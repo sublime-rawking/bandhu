@@ -11,17 +11,23 @@ import moment from "moment/moment";
  *
  * @param {Request} request - The request object containing the give and ask data.
  * @return {Promise<Response>} A promise that resolves to the response object.
+ *
+ * The response object contains the success status, a message, and the created give and ask data.
+ * If there is an error, the response object contains the error message.
  */
 export const POST = async (request) => {
     try {
 
+        // Verify the token
         const token = await VerifyToken();
         if (!token.success) {
             return Response.json(token, { status: 401 });
         }
 
+        // Extract the give and ask data from the request body
         const bodyData = await request.json();
 
+        // Validate the give and ask data
         const { error, status } = await new Promise((resolve) => {
             validator(bodyData, {
                 date: "required",
@@ -33,6 +39,7 @@ export const POST = async (request) => {
             });
         });
 
+        // If the give and ask data is invalid, return an error response
         if (!status) {
             return Response.json({
                 success: false,
@@ -42,7 +49,10 @@ export const POST = async (request) => {
             }, { status: 400 });
         }
 
+        // Convert the give and ask date to a moment object
         const dateTime = moment.utc(bodyData.date).toDate();
+
+        // Create a new give and ask record in the database
         const giveAndAsk = await prisma.give_ask.create({
             data: {
                 ask: bodyData.ask,
@@ -53,7 +63,7 @@ export const POST = async (request) => {
             },
         });
 
-
+        // Return a success response with the created give and ask data
         return Response.json({
             success: true,
             message: "Added give and ask successfully",
@@ -62,6 +72,7 @@ export const POST = async (request) => {
     } catch (error) {
         console.error(error);
 
+        // Return an error response with the error message
         return Response.json({
             success: false,
             message: error.message,
@@ -74,19 +85,31 @@ export const POST = async (request) => {
 
 
 
+/**
+ * Handles the GET request to retrieve give and ask records for a given member
+ * and date range.
+ * 
+ * @param {Request} request - The request object containing the search parameters.
+ * @return {Promise<Response>} A promise that resolves to a response object containing the result of the query.
+ */
 export const GET = async (request) => {
     try {
 
+        // Verify the token
         const token = await VerifyToken();
         if (!token.success) {
             return Response.json(token, { status: 401 });
         }
 
-
+        // Extract the search parameters
         const searchParams = new URL(request.url).searchParams;
         const id = searchParams.get('id');
+
+        // Define the database query
         let giveAndAsk = []
         if (searchParams.get("date")) {
+
+            // If a date is provided, filter by the given date range
             giveAndAsk = await prisma.give_ask.findMany({
                 where: {
                     member_id: id ? Number(id) : token.data.id,
@@ -101,6 +124,8 @@ export const GET = async (request) => {
             });
 
         } else {
+
+            // If no date is provided, return all give and ask records for the given member
             giveAndAsk = await prisma.give_ask.findMany({
                 where: {
                     member_id: id ? Number(id) : token.data.id
@@ -112,15 +137,17 @@ export const GET = async (request) => {
             });
         }
 
+        // Return the result of the query
         return Response.json({
             success: true,
             message: "give and ask successfully",
             data: giveAndAsk,
         }, { status: 200 });
 
-
     } catch (error) {
         console.error(error);
+
+        // Return an error response if an error occurs
         return Response.json({
             success: false,
             message: error.message,
@@ -128,4 +155,4 @@ export const GET = async (request) => {
             data: {},
         })
     }
-} 
+}

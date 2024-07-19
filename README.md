@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Run and Build the App
 
-## Getting Started
+To run the app, follow these steps:
 
-First, run the development server:
+1. Open your terminal.
+2. Navigate to the project directory.
+3. Run the following command to install the project dependencies:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```
+   npm install
+   npm run build
+   npm run start
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## File Structure
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Here is the file structure of the project:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+![alt text](readme/file-structure.png)
 
-## Learn More
+- Prisma : prisma scheme
+- Src : all the source code
+- .Env : for all the keys and DB url
+- next.config.mjs : for next-js all the configuration
+- tailwind.config.js : for tailwind all the extended css and plugins
+- package.json : all the project dependencies , versions and scripts
 
-To learn more about Next.js, take a look at the following resources:
+Inside the src folder, you will find the following files:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+![alt text](readme/src-file-structure.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- app: contains all the pages
+- assets: contains all the assets
+- config: contains all the config
+- services: contains all the services
+- helpers: contains all the helpers
+- customHooks: contains all the custom hooks
+- middlewares.js: contains the middlewares for web panel
 
-## Deploy on Vercel
+Inside the app folder, you will find the following files:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![alt text](readme/app-file-structure.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- api: contains all the api
+- layout: is the main layout of the application
+- dashboard: contains all the dashboard pages and UI elements
+- favicon.ico: have the favicon
+- page.js: have login page ui and component with validation and functions
+- global.css: contains all the global css with tailwind config imports
+
+Inside the api folder, you will find the following files:
+
+![alt text](readme/api-file-structure.png)
+
+- admin: contains all the admin api
+
+  - auth: contains all the auth api for admin
+  - addUser: contains all the add user api for admin
+  - allUsers: contains all the get user api for admin
+
+- mobile: contains all the mobile api
+  - allUsers: contains all the get user api for mobile
+  - auth: contains all the auth api for mobile
+  - dcp: contains all the dcp api for mobile (FIXME: need to update - have add s3 bucket )
+  - forget_password: contains all the forget password api for mobile
+  - give_and_ask: contains all the give and ask api for mobile
+  - user: contains all the user api for mobile
+
+Inside the api folder, you will find the following files:
+
+![alt text](readme/dashboard-file-structure.png)
+- userDetails.jsx : have userDetails component ui 
+- userTable.jsx : have userTable component ui
+- addUser.jsx : have addUser component ui
+- page.jsx : have dashboard page ui and component bind.

@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 
 
 export const LoginService = async ({ email, password }) => {
@@ -7,8 +8,8 @@ export const LoginService = async ({ email, password }) => {
     const data = await res.json();
     console.log(res, data);
     if (res.status === 200) {
-        sessionStorage.setItem("user", data.data.token);
+        Cookies.set("token", data.data.token);
     }
 
     return { status: res.status, message: data.message }
-};'bh'  
+}; 'bh'  

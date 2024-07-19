@@ -4,7 +4,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MdOutlinePlaylistRemove } from "react-icons/md";
 
-function AddDetails({ isOpen }) {
+/**
+ * @function AddDetails
+ * @description This component is used to add new user to the database.
+ * @param {boolean} isOpen - This props is used to show or hide the modal.
+ * @returns {JSX.Element} - The JSX element of the component.
+ */
+const AddDetails = ({ isOpen }) => {
   const route = useRouter();
 
   const modalRef = useRef();
@@ -12,6 +18,12 @@ function AddDetails({ isOpen }) {
   const [profileImageURL, setProfileImageURL] = useState("");
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(false);
+
+  /**
+   * @function backgroundClose
+   * @description This function is used to close the modal when the background is clicked.
+   * @param {Event} e - The event of the click.
+   */
   const backgroundClose = (e) => {
     if (e.target === e.currentTarget) {
       modalRef.current.close();
@@ -19,14 +31,11 @@ function AddDetails({ isOpen }) {
     }
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      modalRef.current.showModal();
-    } else {
-      modalRef.current.close();
-    }
-  }, [isOpen, profileImage]);
-
+  /**
+   * @function handleSubmit
+   * @description This function is used to handle the form submission.
+   * @param {Event} e - The event of the form submission.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoader(true);
@@ -53,6 +62,13 @@ function AddDetails({ isOpen }) {
     return false;
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      modalRef.current.showModal();
+    } else {
+      modalRef.current.close();
+    }
+  }, [isOpen, profileImage]);
   return (
     <dialog
       className="backdrop  rounded-xl w-full md:w-1/2 h-fit "
@@ -176,6 +192,6 @@ function AddDetails({ isOpen }) {
       </div>
     </dialog>
   );
-}
+};
 
 export default AddDetails;

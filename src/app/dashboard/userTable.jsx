@@ -12,11 +12,14 @@ import { SortingProvider } from "@/helper/sortingProvider";
  * @return {JSX.Element} The rendered table component.
  */
 function UserTable({ users }) {
+  // State variables to store the data, selected member, and modal reference
   const [data, setData] = useState(users);
   const [selectedMember, setSelectedMember] = useState(
     users.length > 0 ? users[0] : null
   );
   const modalRef = useRef();
+
+  // Table header data
   const TABLE_HEAD = [
     { name: "Sr No.", field: "" },
     { name: "Name", field: "name" },
@@ -26,26 +29,44 @@ function UserTable({ users }) {
     { name: "Status", field: "status" },
   ];
 
+  // State variables to store the sorting order and by
   const [order, setOrder] = useState("decs");
   const [orderBy, setOrderBy] = useState("id");
 
+  /**
+   * Sorts the data based on the specified key and order.
+   *
+   * @param {string} key - The field to sort by.
+   */
   const sortData = (key) => {
+    // Call the sorting provider with the key, order, orderBy, and data
     const sortingData = SortingProvider({
       key,
       order,
       orderBy,
       data,
     });
+
+    // Update the orderBy and order state variables
     setOrderBy(sortingData.prevOrderBy);
     setOrder(sortingData.prevOrder);
+
+    // Update the data state variable with the sorted data
     setData(sortingData.sortedData);
   };
 
+  /**
+   * Opens the modal with the user details at the specified index.
+   *
+   * @param {number} index - The index of the user.
+   */
   const onPressView = (index) => {
+    // Set the selected member to the user at the specified index
     setSelectedMember(users.at(index));
+
+    // Show the modal
     modalRef.current.showModal();
   };
-
   return (
     <>
       <div className="overflow-x-auto mx-10">

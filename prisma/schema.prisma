@@ -50,3 +50,4 @@ model users {
   @@index([username], map: "username")
   @@index([email], map: "email")
 }
+

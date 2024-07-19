@@ -4,41 +4,53 @@ import { Buffer } from "buffer";
 import { writeFileSync } from 'fs';
 import { extname } from "path";
 
+
 /**
- * Handles a POST request to upload a DCP file.
+ * Handles the POST request to upload a DCP file.
  *
- * @param {Request} request - The request object containing the DCP file.
- * @return {Promise<Response>} A JSON response indicating the success or failure of the upload.
+ * This function is responsible for validating and processing the upload of a DCP file.
+ * It verifies the user's token, checks the file type, saves the file to the server,
+ * and updates the user's record with the file's details.
+ *
+ * @param {Request} request - The incoming request object.
+ * @return {Promise<Response>} A promise that resolves with the JSON response indicating the outcome of the operation.
  */
-
 export async function POST(request) {
-
     try {
+        // Verify the user's token
         const token = await VerifyToken();
         if (!token.success) {
+            // If token verification fails, return a 401 Unauthorized response
             return Response.json(token, { status: 401 });
         }
-        const formData = await request.formData();
 
+        // Extract the file from the request
+        const formData = await request.formData();
         const file = formData.get("dcp");
+
+        // Ensure the file is a PDF
         const buffer = Buffer.from(await file.arrayBuffer());
         const extension = extname(file.name);
         if (extension !== ".pdf") {
+            // Respond with an error if the file is not a PDF
             return Response.json({
                 success: false,
                 message: "Only PDF files are allowed",
                 data: {},
             }, { status: 400 });
         }
-        const fileName = token.data.id + extension
+
+        // Save the PDF file to the server
+        const fileName = token.data.id + extension;
         writeFileSync(`public/dcp/${fileName}`, buffer);
+
+        // Update the user's record with the new file details
         const user = await prisma.members.update({
             where: {
-                id: token.data.id
+                id: token.data.id,
             },
             data: {
-                dcp: fileName
-
+                dcp: fileName,
             },
             select: {
                 id: true,
@@ -46,17 +58,16 @@ export async function POST(request) {
                 email: true,
                 mobile: true,
                 profile_image: true,
-                dcp: true
-            }
+                dcp: true,
+            },
         });
 
-
+        // Respond with success and the updated user details
         return Response.json({ success: true, message: "File uploaded successfully", data: { ...user } });
     } catch (error) {
+        // Log and respond with error details in case of an exception
         console.error(error);
-
         return Response.json({ success: false, message: error.message, data: {}, error });
     }
-
 }
 

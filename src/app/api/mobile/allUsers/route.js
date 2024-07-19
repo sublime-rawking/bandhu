@@ -10,36 +10,49 @@ import { VerifyToken } from "@/config/jwtConfig";
  */
 export async function GET() {
     try {
+        // Verify the token
         const token = await VerifyToken();
+
+        // If the token is invalid, return unauthorized response
         if (!token.success) {
             return Response.json(token, { status: 401 });
         }
 
+        // Retrieve user details from the database
         const user = await prisma.members.findMany({
             select: {
-                id: true,
-                name: true,
-                email: true,
-                mobile: true,
-                profile_image: true,
-                dcp: true,
+                id: true, // User ID
+                name: true, // User name
+                email: true, // User email
+                mobile: true, // User mobile number
+                profile_image: true, // User profile image
+                dcp: true, // User DCP status
             }
         });
 
+        // If the user is not found, return not found response
         if (!user) {
-            return Response.json({ success: false, message: "User not found", data: {} });
+            return Response.json({
+                success: false,
+                message: "User not found",
+                data: {}
+            });
         }
 
-
-
+        // Return the user details with success status and message
         return Response.json({
             success: true,
             message: "Get user details successful",
             data: user
         });
     } catch (error) {
+        // Log the error and return error response
         console.error(error);
-
-        return Response.json({ success: false, message: error.message, data: {}, error });
+        return Response.json({
+            success: false,
+            message: error.message,
+            data: {},
+            error
+        });
     }
 }

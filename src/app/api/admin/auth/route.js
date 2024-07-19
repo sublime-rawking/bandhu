@@ -16,8 +16,10 @@ import moment from "moment/moment";
  */
 export async function POST(request) {
     try {
+        // Extract the user data from the request body
         const bodyData = await request.json();
-        console.log(bodyData);
+
+        // Validate the user data
         const { error, status } = await new Promise((resolve) => {
             validator(bodyData, {
                 username: "required",
@@ -28,6 +30,7 @@ export async function POST(request) {
             });
         });
 
+        // If the user data is invalid, return an error response
         if (!status) {
             return Response.json({
                 success: false,
@@ -37,7 +40,10 @@ export async function POST(request) {
             }, { status: 400 });
         }
 
+        // Encrypt the user password
         const encryptedPassword = encrypt(bodyData.password);
+
+        // Create a new user in the database
         const user = await prisma.users.create({
             data: {
                 username: bodyData.username,
@@ -54,19 +60,19 @@ export async function POST(request) {
             }
         });
 
-
+        // Generate a JWT token for the user
         const token = GenerateToken({ id: user.id });
         user.token = token;
 
-
+        // Return a success response with the created user data
         return Response.json({
             success: true,
             message: "User created successfully",
             data: user
         }, { status: 200 });
     } catch (error) {
+        // Log any errors that occur during the request
         console.error(error);
-
     }
 }
 

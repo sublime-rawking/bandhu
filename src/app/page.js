@@ -10,12 +10,25 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 
 
+/**
+ * Home component is the main page of the application, it contains the login form
+ * and handles the login functionality.
+ *
+ * @returns {JSX.Element} The Home component
+ */
 export default function Home() {
+  // State variables to manage the form inputs and error message
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const route = useRouter();
 
-
+  /**
+   * Handles the form submission, makes a login request to the server and
+   * redirects the user to the dashboard if the login is successful.
+   *
+   * @param {Event} e - The form submission event
+   * @returns {Promise<void>} - A Promise that resolves when the function completes
+   */
   const onFormSubmit = async (e) => {
     e.preventDefault();
     console.log("submitted");
@@ -27,7 +40,6 @@ export default function Home() {
     }
     console.log(res.message);
     setError(res.message)
-
   }
 
   return (
