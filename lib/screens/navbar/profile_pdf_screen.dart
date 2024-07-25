@@ -89,9 +89,9 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
                       children: [
                         ref.watch(isUploading)
                             ? Positioned.fill(
-                            child: WaterEffect(
-                              progress: ref.watch(uploadProgress),
-                            ))
+                                child: WaterEffect(
+                                progress: ref.watch(uploadProgress),
+                              ))
                             : SizedBox(),
                         ref.watch(isUploading)
                             ? SizedBox(
@@ -99,8 +99,7 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
                                 height: size.height - 350,
                                 child: Center(
                                   child: Text(
-                                    "${(ref.watch(uploadProgress) * 100)
-                                            .toStringAsFixed(0)}%",
+                                    "${(ref.watch(uploadProgress) * 100).toStringAsFixed(0)}%",
                                     style: fontSemiBold20.copyWith(
                                         color: Colors.black45),
                                   ),
@@ -111,12 +110,11 @@ class _PdfProfileScreenState extends ConsumerState<PdfProfileScreen> {
                                 height: size.height - 350,
                                 child: selectedPdf.isEmpty
                                     ? SfPdfViewer.network(
-                                        "$siteUrl/dcp/${ref.read(AuthServices.instance.userDataProvider).dcp}")
+                                        ref.read(AuthServices.instance.userDataProvider).dcp??"")
                                     : SfPdfViewer.file(
                                         File(selectedPdf),
                                       ),
                               ),
-
                       ],
                     ),
               const SizedBox(
@@ -270,7 +268,8 @@ class WaterPainter extends CustomPainter {
     final double waveLength = size.width / 2;
 
     for (double i = 0; i <= size.width; i++) {
-      final yOffset = waveHeight * sin((i / waveLength * 2 * pi) + (animation.value * 2 * pi));
+      final yOffset = waveHeight *
+          sin((i / waveLength * 2 * pi) + (animation.value * 2 * pi));
       pathWater.lineTo(i, size.height - waterLevel + yOffset);
     }
 
@@ -282,7 +281,8 @@ class WaterPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [colorPrimaryDark, Colors.pinkAccent.withOpacity(0.3)],
-      ).createShader(Rect.fromLTWH(0, size.height - waterLevel, size.width, waterLevel));
+      ).createShader(
+          Rect.fromLTWH(0, size.height - waterLevel, size.width, waterLevel));
 
     final paintContainer = Paint()
       ..color = Colors.grey.shade300

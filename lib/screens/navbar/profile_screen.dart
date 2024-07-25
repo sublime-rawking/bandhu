@@ -49,7 +49,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: Colors.transparent,
         body: RefreshIndicator(
           onRefresh: () async {
-             await Auth.instance.getUserData(ref: ref, );
+            await Auth.instance.getUserData(
+              ref: ref,
+            );
           },
           child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -75,26 +77,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ],
                       ),
                       child: InkWell(
-                        onTap: (userData.profileImage != null &&
-                                userData.profileImage!.isNotEmpty)
-                            ? onPressProfile
-                            : null,
-                        child: SizedBox(
-                          width: 120,
-                          height: 120,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(60),
-                            child: Image.network("$baseUrl/${userData.profileImage}",
-                            loadingBuilder: (context, child, loadingProgress) {
-                              return CircularProgressIndicator();
-                            },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset("assets/images/default.png");
-                              },
+                          onTap: (userData.profileImage != null &&
+                                  userData.profileImage!.isNotEmpty)
+                              ? onPressProfile
+                              : null,
+                          child: SizedBox(
+                            width: 120,
+                            height: 120,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(60),
+                              child: Image.network(
+                                userData.profileImage ?? "",
+                                fit: BoxFit.cover,
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  }
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                      "assets/images/default.png");
+                                },
+                              ),
                             ),
-                          ),
-                        )
-                      ),
+                          )),
                     ),
                   ),
                   Padding(

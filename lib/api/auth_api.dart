@@ -25,10 +25,14 @@ class Auth {
   }) async {
     ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
-      BaseRequest request =
-          BaseRequest(url: ApiUrls.authUrl, data: userData, files: [
-        {"profilePic": userData["Profile"]}
-      ]);
+      BaseRequest request = BaseRequest(
+          url: ApiUrls.authUrl,
+          data: userData,
+          files:( userData["profile_image"] != null && userData["profile_image"] != "")
+              ? [
+                  {"profile_image": userData["profile_image"]}
+                ]
+              : []);
       apiResponse =
           await ApiServices.instance.postMultiFormRequestData(request);
       if (apiResponse.isSuccess) {
@@ -40,6 +44,7 @@ class Auth {
         return false;
       }
     } catch (e) {
+      print(e);
       Strings.instance
           .getToast(msg: apiResponse.message ?? "Something went wrong");
       write(e.toString());
@@ -82,16 +87,22 @@ class Auth {
   ///
   /// Returns:
   /// - A `Future` that completes with a boolean indicating the success of the upload.
-  Future uploadPDF({required String filePath, required WidgetRef ref, sendProgress, context}) async {
+  Future uploadPDF(
+      {required String filePath,
+      required WidgetRef ref,
+      sendProgress,
+      context}) async {
     ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
       BaseRequest request = BaseRequest(url: ApiUrls.updatePdf, files: [
         {"dcp": filePath}
       ]);
-      apiResponse =
-          await ApiServices.instance.postMultiFormRequestData(request,sendProgress: sendProgress);
+      apiResponse = await ApiServices.instance
+          .postMultiFormRequestData(request, sendProgress: sendProgress);
       if (apiResponse.isSuccess) {
-        await Auth.instance.getUserData(ref: ref, );
+        await Auth.instance.getUserData(
+          ref: ref,
+        );
         return true;
       } else {
         Strings.instance.getToast(msg: apiResponse.message ?? "");
@@ -169,11 +180,11 @@ class Auth {
     ApiResponse apiResponse = ApiResponse(apiStatus: ApiStatus.idle);
     try {
       BaseRequest request =
-          BaseRequest(url: ApiUrls.updateUser, data: userData, files: [
-        {"profilePic": userData["Profile"]}
+          BaseRequest(url: ApiUrls.user, data: userData, files: [
+        {"profile_image": userData["Profile"]}
       ]);
       apiResponse =
-          await ApiServices.instance.postMultiFormRequestData(request);
+          await ApiServices.instance.putMultiFormRequestData(request);
       if (apiResponse.isSuccess) {
         User user = User.fromJson(apiResponse.data);
         await AuthServices.instance.setToken(user, ref);
@@ -220,7 +231,8 @@ class Auth {
       apiResponse = await ApiServices.instance.getRequestData(request);
       if (apiResponse.isSuccess) {
         User user = User.fromJson(apiResponse.data);
-        user.token =ApiServices.instance.dioClient.options.headers["x-access-token"];
+        user.token =
+            ApiServices.instance.dioClient.options.headers["x-access-token"];
         ref.watch(AuthServices.instance.userDataProvider.notifier).state = user;
         return true;
       } else {

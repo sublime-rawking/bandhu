@@ -118,4 +118,54 @@ class ApiServices with BaseApiClass {
           }
         });
   }
+
+  putMultiFormRequestData(BaseRequest data, {Function? sendProgress}) async {
+    print(data.files);
+
+    var formData = dio.FormData.fromMap(data.data ?? {});
+    if (data.files != null && data.files!.isNotEmpty) {
+      print(data.files);
+      formData.files.addAll([
+        MapEntry(
+            data.files!.first.keys.first,
+            await dio.MultipartFile.fromFile(
+              data.files!.first.values.first,
+              filename: data.files!.first.values.first.split("/").last,
+              // contentType: MediaType("mime", "pdf"),
+            ))
+      ]);
+    }
+    print(formData.files);
+    dioClient.options.headers["Content-Type"] = "multipart/form-data";
+    return await onRequest(
+        url: data.getRequestUrl(),
+        client: data.httpClient ?? dioClient,
+        method: Method.put,
+        data: formData,
+        sendProgress: ( sent,  total) {
+          sendProgress?.call(sent, total);
+          print(sent);
+          print(total);
+        },
+        successResponse: (response) {
+          dioClient.options.headers["Content-Type"] = "application/json";
+          AppResponseModel appRes;
+          try {
+            appRes = AppResponseModel.fromJson(response.data);
+            return ApiResponse(
+              apiStatus: ApiStatus.success,
+              data: appRes.data,
+              message: appRes.message ?? "",
+              title: appRes.title ?? "",
+            );
+          } catch (e) {
+            return ApiResponse(
+              apiStatus: ApiStatus.success,
+              data: response.data,
+              message: "",
+              title: "",
+            );
+          }
+        });
+  }
 }

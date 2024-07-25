@@ -112,13 +112,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     // get all the fields in Map Object
     Map<String, dynamic> userData = {
       "id": ref.read(AuthServices.instance.userDataProvider).id,
-      "Name": fullNameController.text
+      "name": fullNameController.text
     };
     if (ref.read(userDataProvider).email != emailController.text) {
       userData["email"] = emailController.text.toLowerCase();
     }
     if (ref.read(userDataProvider).mobile != phoneNumberController.text) {
-      userData["Mobile"] = phoneNumberController.text;
+      userData["mobile"] = phoneNumberController.text;
     }
 
     if (ref.read(_selectedImageProvider).isNotEmpty) {
@@ -156,9 +156,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   getUserData() async {
-    emailController.text = ref.read(AuthServices.instance.userDataProvider).email.toString().toLowerCase();
-    fullNameController.text = ref.read(AuthServices.instance.userDataProvider).name.toString().toLowerCase();
-    phoneNumberController.text = ref.read(AuthServices.instance.userDataProvider).mobile.toString().toLowerCase();
+    emailController.text = ref
+        .read(AuthServices.instance.userDataProvider)
+        .email
+        .toString()
+        .toLowerCase();
+    fullNameController.text = ref
+        .read(AuthServices.instance.userDataProvider)
+        .name
+        .toString()
+        .toLowerCase();
+    phoneNumberController.text = ref
+        .read(AuthServices.instance.userDataProvider)
+        .mobile
+        .toString()
+        .toLowerCase();
   }
 
   @override
@@ -231,7 +243,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 radius: 60,
                                 backgroundColor: Colors.transparent,
                                 foregroundImage: NetworkImage(
-                                    "$baseUrl/${ref.read(userDataProvider).profileImage}"),
+                                    ref.read(userDataProvider).profileImage ??
+                                        ""),
                               ),
                       )),
                   const SizedBox(height: 60),
