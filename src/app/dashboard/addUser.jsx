@@ -24,11 +24,11 @@ const AddDetails = ({ isOpen }) => {
    * @description This function is used to close the modal when the background is clicked.
    * @param {Event} e - The event of the click.
    */
-  const backgroundClose = (e) => {
-    if (e.target === e.currentTarget) {
-      modalRef.current.close();
-      route.replace("/dashboard");
-    }
+  const backgroundClose = () => {
+    // if (e.target === e.currentTarget) {
+    //   modalRef.current.close();
+    //   route.replace("/dashboard");
+    // }
   };
 
   /**

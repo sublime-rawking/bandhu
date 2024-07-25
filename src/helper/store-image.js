@@ -1,4 +1,4 @@
-import { Bucket, RemoveImage, UploadAndSetACL } from "@/config/awsS3Config";
+import { Bucket, removeImage, uploadAndSetACL } from "@/config/awsS3Config";
 
 
 /**
@@ -27,7 +27,7 @@ export async function StoreImage({ image, path, id }) {
       ACL: 'public-read',
     };
 
-    return await UploadAndSetACL(params).catch((err) => {
+    return await uploadAndSetACL(params).catch((err) => {
       console.log('ERROR MSG: ', err);
       return ""
     });
@@ -47,17 +47,17 @@ export async function StoreImage({ image, path, id }) {
  * @param {string} options.image - The URL of the image to be deleted.
  * @return {Promise<void>} A promise that resolves when the image is successfully deleted.
  */
-export async function DeleteImage({ image }) {
+export async function DeleteFile({ image , path }) {
   const fileName = image.split('/').pop();
   var params = {
     Bucket: Bucket,
-    Key: `users/${fileName}`,
+    Key: `${path}/${fileName}`,
     /* 
        where value for 'Key' equals 'pathName1/pathName2/.../pathNameN/fileName.ext'
        - full path name to your file without '/' at the beginning
     */
   };
 
-  await RemoveImage(params);
+  await removeImage(params);
 
 } 

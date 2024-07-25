@@ -1,5 +1,6 @@
 import prisma from "@/config/dbConfig";
 import { VerifyToken } from "@/config/jwtConfig";
+import { DeleteFile, StoreImage } from "@/helper/store-image";
 import validator from "@/helper/validate";
 import { Promise } from "es6-promise";
 
@@ -151,13 +152,22 @@ export async function PUT(request) {
         if (!updatedMember) {
             return Response.json({ success: false, message: "User not found", data: {} }, { status: 404 });
         }
-
+        console.log(updatedMember);
         // If a profile image is provided, update it separately
-        if (formData.get("profile_image")) {
-            const profile_image = formData.get("profile_image");
-            updatedMember.profile_image = profile_image;
+        const profile_image = formData.get("profile_image");
+        if (profile_image) {
+            if (updatedMember.profile_image != "") {
+
+                await DeleteFile({ path: "reffergenix/users", image: updatedMember.profile_image });
+            }
+
+            const photo = await StoreImage({
+                id: token.data.id,
+                path: "reffergenix/users",
+                image: profile_image
+            });
             // Update the profile image in the database
-            await prisma.members.update({ where: { id: token.data.id }, data: { profile_image: profile_image } });
+            await prisma.members.update({ where: { id: token.data.id }, data: { profile_image: photo } });
         }
         // Return a success response with the updated user data
         return Response.json({

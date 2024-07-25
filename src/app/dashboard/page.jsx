@@ -8,7 +8,7 @@ import AddDetails from "./addUser";
  * Dashboard Component
  * Asynchronously fetches user data and renders the dashboard including the Navbar,
  * UserTable, and AddDetails components.
- * 
+ *
  * @param {Object} params - The parameters passed to the dashboard component, expected
  * to contain searchParams for conditional rendering.
  */

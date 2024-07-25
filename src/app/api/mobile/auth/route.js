@@ -4,6 +4,7 @@ import validator from "@/helper/validate";
 import { Promise } from 'es6-promise';
 import { GenerateToken } from "@/config/jwtConfig";
 import { decrypt, encrypt } from "@/helper/security";
+import { StoreImage } from "@/helper/store-image";
 
 /**
  * Handles the GET request to authenticate a user.
@@ -98,7 +99,7 @@ export async function GET(request) {
 
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return Response.json({
             success: false,
             message: error.message,
@@ -191,15 +192,14 @@ export async function POST(request) {
 
         });
 
-
+        console.log(formData);
         let photo = formData.get("profile_image");
         if (photo) {
-
-            //!  //FIXME: Use StoreImage function
-            // photo = await StoreImage({
-            //     id: user.id
-            // });
-            photo = "";
+            photo = await StoreImage({
+                id: user.id,
+                path: "reffergenix/users",
+                image: photo
+            });
         } else {
             photo = "";
         }

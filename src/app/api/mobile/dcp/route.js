@@ -1,7 +1,6 @@
 import prisma from "@/config/dbConfig";
 import { VerifyToken } from "@/config/jwtConfig";
-import { Buffer } from "buffer";
-import { writeFileSync } from 'fs';
+import { DeleteFile, StoreImage } from "@/helper/store-image";
 import { extname } from "path";
 
 
@@ -29,7 +28,6 @@ export async function POST(request) {
         const file = formData.get("dcp");
 
         // Ensure the file is a PDF
-        const buffer = Buffer.from(await file.arrayBuffer());
         const extension = extname(file.name);
         if (extension !== ".pdf") {
             // Respond with an error if the file is not a PDF
@@ -41,8 +39,28 @@ export async function POST(request) {
         }
 
         // Save the PDF file to the server
-        const fileName = token.data.id + extension;
-        writeFileSync(`public/dcp/${fileName}`, buffer);
+        const oldFIle = await prisma.members.findUnique({
+            where: {
+                id: token.data.id
+            },
+            select: {
+                dcp: true
+            }
+        })
+        var fileName = "";
+        if (file) {
+
+            if (oldFIle.dcp != "") {
+
+                await DeleteFile({ path: "reffergenix/dcp", image: oldFIle.dcp });
+            }
+            fileName = await StoreImage({
+                id: token.data.id,
+                path: "reffergenix/dcp",
+                image: file
+
+            });
+        }
 
         // Update the user's record with the new file details
         const user = await prisma.members.update({

@@ -9,7 +9,7 @@ import prisma from "@/config/dbConfig"
  * @returns {Promise<Array|Object>} An array of user objects with additional give_ask_count property,
  *                                  or a JSON object indicating failure if no users are found.
  */
-export const dataService = async () => {
+export const userData = async () => {
     // Retrieve users with selected fields from the database
     let users = await prisma.members.findMany({
         select: {
