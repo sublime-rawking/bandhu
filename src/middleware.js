@@ -11,17 +11,22 @@ import { NextResponse } from 'next/server'
  */
 export async function middleware(request) {
   // Extract token and pathname from the request
-  const token = request.cookies.get("token").value;
+  const token = request.cookies.get("token");
   const pathname = request.nextUrl.pathname;
 
   // If token is missing and pathname is not "/", redirect to root URL
   if (!token && pathname !== "/") {
+
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   // If token is present and pathname is "/", redirect to dashboard URL
   if (token && pathname === "/") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (token.value) {
+
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    return NextResponse.redirect(new URL("/", request.url));
   }
 }
 
