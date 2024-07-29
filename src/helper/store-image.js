@@ -28,13 +28,13 @@ export async function StoreImage({ image, path, id }) {
     };
 
     return await uploadAndSetACL(params).catch((err) => {
-      console.log('ERROR MSG: ', err);
+      console.error('ERROR MSG: ', err);
       return ""
     });
 
 
   } catch (err) {
-    console.log('ERROR MSG: ', err);
+    console.error('ERROR MSG: ', err);
     return ''
   }
 
@@ -47,7 +47,7 @@ export async function StoreImage({ image, path, id }) {
  * @param {string} options.image - The URL of the image to be deleted.
  * @return {Promise<void>} A promise that resolves when the image is successfully deleted.
  */
-export async function DeleteFile({ image , path }) {
+export async function DeleteFile({ image, path }) {
   const fileName = image.split('/').pop();
   var params = {
     Bucket: Bucket,

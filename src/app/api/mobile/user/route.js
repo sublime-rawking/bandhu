@@ -152,7 +152,6 @@ export async function PUT(request) {
         if (!updatedMember) {
             return Response.json({ success: false, message: "User not found", data: {} }, { status: 404 });
         }
-        console.log(updatedMember);
         // If a profile image is provided, update it separately
         const profile_image = formData.get("profile_image");
         if (profile_image) {

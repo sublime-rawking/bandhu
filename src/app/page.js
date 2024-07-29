@@ -31,14 +31,11 @@ export default function Home() {
    */
   const onFormSubmit = async (e) => {
     e.preventDefault();
-    console.log("submitted");
     const res = await LoginService({ email: e.target.username.value, password: e.target.password.value });
-    console.log(res);
     if (res.status === 200) {
       route.push("/dashboard");
       return
     }
-    console.log(res.message);
     setError(res.message)
   }
 

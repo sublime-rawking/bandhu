@@ -1,5 +1,4 @@
 export const SortingProvider = ({ key, prevOrderBy, prevOrder, data }) => {
-   console.log(key, prevOrderBy, prevOrder, data);
    
     let orderBy = prevOrderBy;
     let order = prevOrder;

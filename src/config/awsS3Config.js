@@ -68,7 +68,6 @@ export async function uploadAndSetACL(params) {
     // The upload method accepts a params object with the Bucket, Key, Body, and ACL properties.
     // The method returns a promise that resolves to the result of the upload.
     const uploadResult = await s3.upload(params).promise();
-    console.log(uploadResult);
     // Return the Location property of the uploadResult object.
     // The Location property contains the URL of the uploaded file.
     return uploadResult.Location;

@@ -1,6 +1,5 @@
 "use client";
 import Cookies from "js-cookie";
-import Link from "next/link";
 import React from "react";
 
 function Navbar() {
@@ -20,6 +19,20 @@ function Navbar() {
 
     // Removing the data from the Cookies
     Cookies.remove("data");
+
+    // Redirecting the user to the login page
+    window.location.href = "/";
+  };
+
+  /**
+   * Redirects the user to the login page
+   *
+   * @function
+   * @name handleLogin
+   * @returns {void}
+   */
+  const handleAddUser = () => {
+    window.location.href = "/dashboard?user=true";
   };
 
   return (
@@ -33,12 +46,10 @@ function Navbar() {
         <div className="navbar bg-base-100">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <Link href="/dashboard?user=true">Add User</Link>
+              <div onClick={handleAddUser} >Add User</div>
             </li>
             <li>
-              <Link href="/" onClick={handleLogout}>
-                Logout
-              </Link>
+              <div onClick={handleLogout}>Logout</div>
             </li>
           </ul>
         </div>

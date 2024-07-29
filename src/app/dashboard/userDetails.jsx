@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 
 function UserDetails({ user, modalRef }) {
@@ -11,7 +12,7 @@ function UserDetails({ user, modalRef }) {
   };
 
   const onStatusChange = async () => {
-    const data = await fetch(`/api/admin/allUsers`, {
+    await fetch(`/api/admin/allUsers`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -22,7 +23,6 @@ function UserDetails({ user, modalRef }) {
         isDisable: status ? 0 : 1,
       }),
     }).then(async (res) => await res.json());
-    console.log(data);
     window.location.reload();
     setStatus(!status);
   };
@@ -74,14 +74,14 @@ function UserDetails({ user, modalRef }) {
                 <tr className="py-6">
                   <td className="py-4 pr-4">DCP:</td>
                   <td className="py-4">
-                    <a
-                      href={`dcp/${user.dcp}`}
+                    <Link
+                      href={user.dcp}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primaryDark  hover:underline"
                     >
                       {user.dcp}
-                    </a>
+                    </Link>
                   </td>
                 </tr>
                 <tr className="py-6">
@@ -95,7 +95,7 @@ function UserDetails({ user, modalRef }) {
                       className="ml-2 px-2 py-1 rounded-md bg-primary text-white"
                       onClick={() => onStatusChange()}
                     >
-                      {status ? "Active" : "Inactive"}
+                      {user.status == 1 ? "Active" : "Inactive"}
                     </button>
                   </td>
                 </tr>

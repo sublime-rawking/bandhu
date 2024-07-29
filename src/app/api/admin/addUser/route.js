@@ -14,7 +14,6 @@ export async function POST(request) {
 
         // Extract the form data from the request
         const formData = await request.formData();
-        console.log(formData);
 
         // Validate the form data
         const { error, status } = await new Promise((resolve) => {

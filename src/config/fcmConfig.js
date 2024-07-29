@@ -18,7 +18,6 @@ export async function sendMsgFunction({ payload }) {
 
   try {
     const response = await messaging.send(payload);
-    console.log("Successfully sent message:", response);
     return response;
   } catch (error) {
     console.error("fcm error:", error);

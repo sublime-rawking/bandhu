@@ -192,7 +192,6 @@ export async function POST(request) {
 
         });
 
-        console.log(formData);
         let photo = formData.get("profile_image");
         if (photo) {
             photo = await StoreImage({
