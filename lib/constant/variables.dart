@@ -8,10 +8,10 @@ import 'package:intl/intl.dart';
 
 // server endpoint
 // Main Server
-//const baseUrl = "http://5.189.156.172/BNI";
+const baseUrl = "http://5.189.156.172:3002/api/mobile";
 
 // localHost
-const baseUrl = "http://192.168.0.153:3000/api/mobile";
+//const baseUrl = "http://192.168.0.153:3000/api/mobile";
 const siteUrl = "http://192.168.0.153:3000";
 const defaultprofileImage = "assets/images/default.png";
 final StateProvider<User> userDataProvider =

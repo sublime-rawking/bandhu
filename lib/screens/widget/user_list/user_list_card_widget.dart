@@ -29,7 +29,7 @@ class UserListCardWidget extends ConsumerWidget {
         MaterialPageRoute(
             builder: (context) => PDFScreen(
                 dcpPDF: userData.dcp != ""
-                    ? '$siteUrl/dcp/${userData.dcp}'
+                    ? userData.dcp??""
                     : "")));
     return Padding(
       padding: const EdgeInsets.all(10),
